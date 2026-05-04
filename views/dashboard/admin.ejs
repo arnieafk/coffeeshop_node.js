@@ -10,17 +10,23 @@
 <body>
 
 <header class="top-header">
+
   <div>☕ Coffee Shop System</div>
+
+  <!-- ✅ ADD MOBILE TOGGLE BUTTON -->
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
   <div class="user-info">
     👑 Admin: <strong><%= user.name %></strong>
     <a class="logout-btn" href="/logout">Logout</a>
   </div>
+
 </header>
 
 <div class="container">
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
+<!-- SIDEBAR (ONLY ADD ID - NO STRUCTURE CHANGE) -->
+<nav class="sidebar" id="sidebar">
 
   <h2>☕ ADMIN PANEL</h2>
 
@@ -100,6 +106,9 @@
 </main>
 
 </div>
+
+<!-- ✅ ADD TOGGLE SCRIPT ONLY -->
+<script src="/js/script.js"></script>
 
 </body>
 </html>

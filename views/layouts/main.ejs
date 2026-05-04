@@ -11,7 +11,7 @@
 
 <!-- TOP HEADER -->
 <header class="top-header">
-  
+
   <div class="left-header">
     ☕ Coffee Shop System
   </div>
@@ -21,7 +21,10 @@
 
   <div class="right-header">
     <% if (currentUser) { %>
-      Welcome, <%= currentUser.name %> (<%= currentUser.role %>)
+      <span>
+        Welcome, <%= currentUser.name %> (<%= currentUser.role %>)
+      </span>
+
       <a href="/logout" class="logout-btn">Logout</a>
     <% } %>
   </div>
@@ -66,12 +69,8 @@
 
 </div>
 
-<!-- SIMPLE TOGGLE SCRIPT -->
-<script>
-  function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("active");
-  }
-</script>
+<!-- JS -->
+<script src="/js/script.js"></script>
 
 </body>
 </html>
