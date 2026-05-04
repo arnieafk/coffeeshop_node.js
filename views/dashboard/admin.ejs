@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Coffee Shop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<header class="top-header">
+  <div>☕ Coffee Shop System</div>
+  <div class="user-info">
+    👑 Admin: <strong><%= user.name %></strong>
+    <a class="logout-btn" href="/logout">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+
+  <h2>☕ ADMIN PANEL</h2>
+
+  <p class="menu-title">MAIN</p>
+  <a href="/admin">📊 Dashboard</a>
+  <a href="/admin/products">📦 Products</a>
+  <a href="/admin/orders">📋 Orders</a>
+  <a href="/admin/payments">💳 Payments</a>
+
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="header">📊 Dashboard</div>
+
+  <div class="metrics-grid">
+
+    <div class="metric-card">
+      <div class="icon">💰</div>
+      <div class="value">$<%= totals?.revenue || '0.00' %></div>
+      <div class="label">Total Revenue</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="icon">📦</div>
+      <div class="value"><%= totals?.orders || 0 %></div>
+      <div class="label">Total Orders</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="icon">☕</div>
+      <div class="value"><%= totals?.products || 0 %></div>
+      <div class="label">Products</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="icon">👥</div>
+      <div class="value"><%= totals?.customers || 0 %></div>
+      <div class="label">Customers</div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h3>Recent Orders</h3>
+
+    <% if (recentOrders?.length) { %>
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Customer</th>
+        <th>Status</th>
+        <th>Total</th>
+      </tr>
+
+      <% recentOrders.forEach(o => { %>
+      <tr>
+        <td>#<%= o.id %></td>
+        <td><%= o.customer_name %></td>
+        <td>
+          <span class="status-badge status-<%= o.status %>">
+            <%= o.status %>
+          </span>
+        </td>
+        <td>$<%= o.total %></td>
+      </tr>
+      <% }) %>
+
+    </table>
+    <% } else { %>
+      <p>No orders yet</p>
+    <% } %>
+
+  </div>
+
+</main>
+
+</div>
+
+</body>
+</html>

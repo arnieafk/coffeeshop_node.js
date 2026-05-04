@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Order Details</title>
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="top-header">
+    <div class="user-info">
+        <span>👑 Admin Dashboard</span>
+    </div>
+
+    <div class="user-info">
+        <span>
+            Welcome,
+            <%= typeof user !== 'undefined'
+                ? user.name
+                : 'Admin' %>
+        </span>
+
+        <a href="/logout"
+           class="logout-btn">
+           Logout
+        </a>
+    </div>
+</header>
+
+
+
+<div class="container">
+
+<nav class="sidebar">
+    <h2>☕ Admin Panel</h2>
+
+    <a href="/admin">
+      📊 Dashboard
+    </a>
+
+    <a href="/admin/products">
+      📦 Products
+    </a>
+
+    <a href="/admin/orders">
+      📋 Orders
+    </a>
+
+    <a href="/admin/payments">
+      💳 Payments
+    </a>
+</nav>
+
+
+
+<main class="main">
+
+<div class="header">
+Order #<%= order.id %> Details
+</div>
+
+
+
+<div class="card">
+<div style="display:flex;gap:15px;flex-wrap:wrap;">
+<a href="/admin/orders"
+class="btn btn-secondary">
+← Back to Orders
+</a>
+
+<a href="/admin/payments"
+class="btn btn-secondary">
+💳 Payments
+</a>
+</div>
+</div>
+
+
+
+<!-- Order Summary -->
+<div class="card">
+<h2>📄 Order Information</h2>
+
+<p>
+<strong>Order ID:</strong>
+#<%= order.id %>
+</p>
+
+<p>
+<strong>Customer:</strong>
+<%= order.customer_name %>
+</p>
+
+<p>
+<strong>Email:</strong>
+<%= order.customer_email %>
+</p>
+
+<p>
+<strong>Status:</strong>
+
+<span style="
+padding:8px 14px;
+border-radius:20px;
+font-weight:600;
+background:#d4edda;">
+<%= order.status %>
+</span>
+
+</p>
+
+<p>
+<strong>Total:</strong>
+$<%= Number(order.total).toFixed(2) %>
+</p>
+
+<p>
+<strong>Date:</strong>
+<%= new Date(order.created_at)
+.toLocaleString() %>
+</p>
+
+</div>
+
+
+
+<!-- Ordered Items -->
+<div class="card">
+
+<h2 style="margin-bottom:20px;">
+🛒 Ordered Items
+</h2>
+
+<% if(order.items && order.items.length > 0){ %>
+
+<div class="table-container">
+<table class="table">
+
+<thead>
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Qty</th>
+<th>Subtotal</th>
+</tr>
+</thead>
+
+<tbody>
+
+<% order.items.forEach(item=>{ %>
+
+<tr>
+
+<td style="font-weight:600;">
+<%= item.name %>
+</td>
+
+<td>
+$<%= Number(item.price).toFixed(2) %>
+</td>
+
+<td>
+<%= item.quantity %>
+</td>
+
+<td style="font-weight:600;">
+$<%= (
+Number(item.price)
+*
+Number(item.quantity)
+).toFixed(2) %>
+</td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+</div>
+
+<% } else { %>
+
+<p>No items found.</p>
+
+<% } %>
+
+</div>
+
+
+
+<!-- Admin Notes -->
+<div class="card">
+
+<h3>📌 Order Monitoring</h3>
+
+<ul style="
+line-height:1.8;
+padding-left:20px;
+">
+<li>Review customer order details carefully</li>
+<li>Confirm payment before fulfillment</li>
+<li>Monitor order status updates</li>
+<li>Track completed and pending orders</li>
+</ul>
+
+</div>
+
+
+
+</main>
+</div>
+
+</body>
+</html>

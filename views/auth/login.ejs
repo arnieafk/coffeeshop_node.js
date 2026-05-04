@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Coffee Shop</title>
+
+<style>
+:root {
+  --espresso-deep:#1e1814;
+  --espresso-mute:#2d241e;
+  --cream-bg:#f4f1ee;
+  --latte-accent:#d7b899;
+  --text-main:#2d1e12;
+  --white-glass:rgba(255,255,255,0.95);
+  --shadow-md:0 10px 25px rgba(0,0,0,0.08);
+  --error:#e74c3c;
+  --error-bg:#fadbd8;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,var(--espresso-deep),var(--espresso-mute));
+}
+
+/* LAYOUT */
+.auth {
+  display:flex;
+  min-height:100vh;
+}
+
+/* LEFT */
+.left {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  padding:40px;
+  position:relative;
+}
+
+.left h1 {
+  color:var(--latte-accent);
+  font-size:2.2rem;
+}
+
+.left p {
+  opacity:0.8;
+}
+
+/* RIGHT */
+.right {
+  flex:1;
+  background:var(--cream-bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+}
+
+.box {
+  width:100%;
+  max-width:420px;
+  background:var(--white-glass);
+  padding:40px;
+  border-radius:18px;
+  box-shadow:var(--shadow-md);
+}
+
+/* FORM */
+input {
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  margin-bottom:18px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+input:focus {
+  outline:none;
+  border-color:var(--latte-accent);
+}
+
+button {
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:var(--espresso-deep);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover {
+  background:var(--latte-accent);
+  color:var(--espresso-deep);
+}
+
+a {
+  color:var(--espresso-deep);
+  text-decoration:none;
+  font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="auth">
+
+  <div class="left">
+    <div>
+      <h1>☕ Coffee System</h1>
+      <p>Manage your coffee shop easily and efficiently</p>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="box">
+
+      <h2>Login</h2>
+
+      <% if (error) { %>
+        <p style="color:red;"><%= error %></p>
+      <% } %>
+
+      <form method="POST" action="/login">
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Login</button>
+
+      </form>
+
+      <p style="margin-top:15px;">
+        No account? <a href="/register">Register</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
