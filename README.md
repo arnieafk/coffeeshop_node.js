@@ -7,30 +7,30 @@ coffeeshop_node.js/
 +-- app.js
 +-- .env
 +-- config/
-¦   +-- db.js
+ï¿½   +-- db.js
 +-- controllers/
-¦   +-- adminController.js
-¦   +-- authController.js
-¦   +-- customerController.js
-¦   +-- staffController.js
+ï¿½   +-- adminController.js
+ï¿½   +-- authController.js
+ï¿½   +-- customerController.js
+ï¿½   +-- staffController.js
 +-- middleware/
-¦   +-- authMiddleware.js
+ï¿½   +-- authMiddleware.js
 +-- models/
-¦   +-- Order.js
-¦   +-- Payment.js
-¦   +-- Product.js
-¦   +-- User.js
+ï¿½   +-- Order.js
+ï¿½   +-- Payment.js
+ï¿½   +-- Product.js
+ï¿½   +-- User.js
 +-- public/
-¦   +-- css/
-¦       +-- style.css
+ï¿½   +-- css/
+ï¿½       +-- style.css
 +-- routes/
-¦   +-- adminRoutes.js
-¦   +-- authRoutes.js
-¦   +-- customerRoutes.js
-¦   +-- staffRoutes.js
+ï¿½   +-- adminRoutes.js
+ï¿½   +-- authRoutes.js
+ï¿½   +-- customerRoutes.js
+ï¿½   +-- staffRoutes.js
 +-- sql/
-¦   +-- schema.sql
-¦   +-- seed.sql
+ï¿½   +-- schema.sql
+ï¿½   +-- seed.sql
 +-- views/
     +-- admin/
     +-- auth/
