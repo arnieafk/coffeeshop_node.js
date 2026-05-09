@@ -1,6 +1,67 @@
 const Order = require('../models/Order');
 
+/* ======================
+   GET DASHBOARD STATS
+====================== */
+async function getStats() {
+  try {
 
+    const orders = await Order.getAllForStaff();
+
+    const stats = {
+      pending: 0,
+      preparing: 0,
+      completed: 0
+    };
+
+    orders.forEach(order => {
+
+      const status = String(order.status).toLowerCase();
+
+      if (status === 'pending') {
+        stats.pending++;
+      }
+
+      else if (status === 'preparing') {
+        stats.preparing++;
+      }
+
+      else if (status === 'completed') {
+        stats.completed++;
+      }
+
+    });
+
+    return stats;
+
+  } catch (error) {
+    console.error(error);
+
+    return {
+      pending: 0,
+      preparing: 0,
+      completed: 0
+    };
+  }
+}
+
+/* ======================
+   GET DASHBOARD ORDERS
+====================== */
+async function getOrders() {
+  try {
+
+    return await Order.getAllForStaff();
+
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+/* ======================
+   STAFF ORDERS PAGE
+====================== */
 async function listOrders(req, res) {
 
   try {
@@ -13,18 +74,23 @@ async function listOrders(req, res) {
     });
 
   } catch (error) {
+
     console.error(error);
     res.send('Error loading staff orders');
+
   }
 }
 
-
+/* ======================
+   UPDATE ORDER STATUS
+====================== */
 async function updateOrderStatus(req, res) {
+
   try {
 
     let { status } = req.body;
 
-    // 🔥 FORCE STANDARD FORMAT
+    /* STANDARDIZE STATUS */
     const map = {
       pending: 'Pending',
       preparing: 'Preparing',
@@ -45,13 +111,16 @@ async function updateOrderStatus(req, res) {
     res.redirect('/staff/orders');
 
   } catch (error) {
+
     console.error(error);
     res.send('Error updating status');
+
   }
 }
 
-
 module.exports = {
+  getStats,
+  getOrders,
   listOrders,
   updateOrderStatus
 };
