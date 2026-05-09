@@ -10,7 +10,7 @@
   <!-- Top Header Bar -->
   <header class="top-header">
     <div class="user-info">
-      <span>👑 Admin Dashboard</span>
+      <span> Admin Dashboard</span>
     </div>
     <div class="user-info">
       <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
@@ -21,11 +21,11 @@
   <div class="container">
     <!-- Persistent Left Sidebar -->
     <nav class="sidebar">
-      <h2>☕ Admin Panel</h2>
-      <a href="/admin">📊 Dashboard</a>
-      <a href="/admin/products">📦 Products</a>
-      <a href="/admin/orders">📋 Orders</a>
-      <a href="/admin/payments">💳 Payments</a>
+      <h2> Admin Panel</h2>
+      <a href="/admin"> Dashboard</a>
+      <a href="/admin/products"> Products</a>
+      <a href="/admin/orders"> Orders</a>
+      <a href="/admin/payments"> Payments</a>
     </nav>
 
     <!-- Main Content Area -->
@@ -35,9 +35,9 @@
       <!-- Quick Actions -->
       <div class="card">
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <a href="/admin/products" class="btn btn-secondary">📦 Manage Products</a>
-          <a href="/admin/payments" class="btn btn-secondary">💳 View Payments</a>
-          <a href="/admin" class="btn btn-secondary">← Back to Dashboard</a>
+          <a href="/admin/products" class="btn btn-secondary"> Manage Products</a>
+          <a href="/admin/payments" class="btn btn-secondary"> View Payments</a>
+          <a href="/admin" class="btn btn-secondary"> Back to Dashboard</a>
         </div>
       </div>
 
@@ -66,11 +66,11 @@
                   <td style="font-weight: 600; color: var(--espresso-deep);">$<%= Number(order.total).toFixed(2) %></td>
                   <td><%= formatManilaDateTime(order.created_at) %></td>
                   <td class="actions">
-                    <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">👁️ View</a>
+                    <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">View</a>
                     <% if (order.status === 'Pending') { %>
                       <form method="POST" action="/admin/orders/<%= order.id %>/status" style="display: inline;">
                         <input type="hidden" name="status" value="Preparing">
-                        <button type="submit" class="btn btn-small btn-success">✓ Confirm</button>
+                        <button type="submit" class="btn btn-small btn-success"> Confirm</button>
                       </form>
                     <% } %>
                   </td>
@@ -81,7 +81,7 @@
         </div>
       <% } else { %>
         <div class="card" style="text-align: center;">
-          <div style="font-size: 3rem; margin-bottom: 20px;">📋</div>
+          <div style="font-size: 3rem; margin-bottom: 20px;"></div>
           <h3>No Orders Found</h3>
           <p>All orders have been processed!</p>
         </div>

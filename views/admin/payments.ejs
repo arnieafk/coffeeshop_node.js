@@ -12,7 +12,7 @@
 <!-- Top Header -->
 <header class="top-header">
     <div class="user-info">
-        <span>👑 Admin Dashboard</span>
+        <span> Admin Dashboard</span>
     </div>
 
     <div class="user-info">
@@ -26,12 +26,12 @@
 
     <!-- Sidebar -->
     <nav class="sidebar">
-        <h2>☕ Admin Panel</h2>
+        <h2> Admin Panel</h2>
 
-        <a href="/admin">📊 Dashboard</a>
-        <a href="/admin/products">📦 Products</a>
-        <a href="/admin/orders">📋 Orders</a>
-        <a href="/admin/payments">💳 Payments</a>
+        <a href="/admin"> Dashboard</a>
+        <a href="/admin/products"> Products</a>
+        <a href="/admin/orders"> Orders</a>
+        <a href="/admin/payments"> Payments</a>
     </nav>
 
 
@@ -48,15 +48,15 @@
         <div class="card">
             <div style="display:flex; gap:15px; flex-wrap:wrap;">
                 <a href="/admin/products" class="btn btn-secondary">
-                    📦 Products
+                     Products
                 </a>
 
                 <a href="/admin/orders" class="btn btn-secondary">
-                    📋 Orders
+                     Orders
                 </a>
 
                 <a href="/admin" class="btn btn-secondary">
-                    ← Dashboard
+                     Dashboard
                 </a>
             </div>
         </div>
@@ -65,7 +65,7 @@
 
         <!-- Payment Summary -->
         <div class="card">
-            <h2 style="margin-bottom:15px;">💳 Payment Records</h2>
+            <h2 style="margin-bottom:15px;"> Payment Records</h2>
             <p>
                 View submitted customer payment information and verification statuses.
             </p>
@@ -110,7 +110,7 @@
                                 background:#fff3cd;
                                 border-radius:20px;
                                 font-weight:600;">
-                                ⏳ Pending
+                                Pending
                                 </span>
 
                             <% } else if(p.status === 'Verified'){ %>
@@ -120,7 +120,7 @@
                                 background:#d4edda;
                                 border-radius:20px;
                                 font-weight:600;">
-                                ✅ Verified
+                                 Verified
                                 </span>
 
                             <% } else { %>
@@ -130,7 +130,7 @@
                                 background:#f8d7da;
                                 border-radius:20px;
                                 font-weight:600;">
-                                ❌ <%= p.status %>
+                                 <%= p.status %>
                                 </span>
 
                             <% } %>
@@ -148,7 +148,7 @@
         <!-- Empty State -->
         <div class="card" style="text-align:center;">
             <div style="font-size:4rem; margin-bottom:20px;">
-                💳
+                
             </div>
 
             <h3>No Payments Found</h3>
@@ -170,7 +170,7 @@
 
         <!-- Payment Stats -->
         <div class="card">
-            <h3>📌 Payment Monitoring Tips</h3>
+            <h3> Payment Monitoring Tips</h3>
 
             <ul style="line-height:1.8; padding-left:20px;">
                 <li>Check pending payments regularly</li>

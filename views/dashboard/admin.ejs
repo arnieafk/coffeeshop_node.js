@@ -11,13 +11,13 @@
 
 <header class="top-header">
 
-  <div>☕ Coffee Shop System</div>
+  <div> Coffee Shop System</div>
 
-  <!-- ✅ ADD MOBILE TOGGLE BUTTON -->
-  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <!--  ADD MOBILE TOGGLE BUTTON -->
+  <button class="menu-toggle" onclick="toggleSidebar()"></button>
 
   <div class="user-info">
-    👑 Admin: <strong><%= user.name %></strong>
+     Admin: <strong><%= user.name %></strong>
     <a class="logout-btn" href="/logout">Logout</a>
   </div>
 
@@ -28,43 +28,43 @@
 <!-- SIDEBAR (ONLY ADD ID - NO STRUCTURE CHANGE) -->
 <nav class="sidebar" id="sidebar">
 
-  <h2>☕ ADMIN PANEL</h2>
+  <h2> ADMIN PANEL</h2>
 
   <p class="menu-title">MAIN</p>
-  <a href="/admin">📊 Dashboard</a>
-  <a href="/admin/products">📦 Products</a>
-  <a href="/admin/orders">📋 Orders</a>
-  <a href="/admin/payments">💳 Payments</a>
+  <a href="/admin"> Dashboard</a>
+  <a href="/admin/products"> Products</a>
+  <a href="/admin/orders"> Orders</a>
+  <a href="/admin/payments"> Payments</a>
 
 </nav>
 
 <!-- MAIN -->
 <main class="main">
 
-  <div class="header">📊 Dashboard</div>
+  <div class="header"> Dashboard</div>
 
   <div class="metrics-grid">
 
     <div class="metric-card">
-      <div class="icon">💰</div>
+      <div class="icon"></div>
       <div class="value">$<%= totals?.revenue || '0.00' %></div>
       <div class="label">Total Revenue</div>
     </div>
 
     <div class="metric-card">
-      <div class="icon">📦</div>
+      <div class="icon"></div>
       <div class="value"><%= totals?.orders || 0 %></div>
       <div class="label">Total Orders</div>
     </div>
 
     <div class="metric-card">
-      <div class="icon">☕</div>
+      <div class="icon"></div>
       <div class="value"><%= totals?.products || 0 %></div>
       <div class="label">Products</div>
     </div>
 
     <div class="metric-card">
-      <div class="icon">👥</div>
+      <div class="icon"></div>
       <div class="value"><%= totals?.customers || 0 %></div>
       <div class="label">Customers</div>
     </div>
@@ -107,7 +107,7 @@
 
 </div>
 
-<!-- ✅ ADD TOGGLE SCRIPT ONLY -->
+<!--  ADD TOGGLE SCRIPT ONLY -->
 <script src="/js/script.js"></script>
 
 </body>

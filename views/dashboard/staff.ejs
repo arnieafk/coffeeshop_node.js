@@ -25,13 +25,13 @@
 
 <header class="top-header">
 
-  <div class="user-info">☕ Coffee Shop System</div>
+  <div class="user-info"> Coffee Shop System</div>
 
-  <!-- ✅ ADD HAMBURGER BUTTON -->
-  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <!--  ADD HAMBURGER BUTTON -->
+  <button class="menu-toggle" onclick="toggleSidebar()"></button>
 
   <div class="user-info">
-    👨‍💼 Staff: <%= user.name %>
+    Staff: <%= user.name %>
     <a class="logout-btn" href="/logout">Logout</a>
   </div>
 
@@ -39,22 +39,22 @@
 
 <div class="container">
 
-  <!-- ✅ ADD ONLY ID -->
+  <!--  ADD ONLY ID -->
   <nav class="sidebar" id="sidebar">
 
     <div class="sidebar-brand">
-      <div class="logo">☕</div>
+      <div class="logo"></div>
       <div>
         <h2>Staff Panel</h2>
       </div>
     </div>
 
     <p class="menu-title">MAIN</p>
-    <a href="/staff" class="active">📊 Dashboard</a>
-    <a href="/staff/orders">📋 Orders</a>
+    <a href="/staff" class="active"> Dashboard</a>
+    <a href="/staff/orders"> Orders</a>
 
     <div class="sidebar-footer">
-      <a href="/logout" class="logout-btn">🚪 Logout</a>
+      <a href="/logout" class="logout-btn"> Logout</a>
     </div>
 
   </nav>
@@ -65,19 +65,19 @@
 
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="icon">⏳</div>
+        <div class="icon"></div>
         <div class="value"><%= stats?.pending || 0 %></div>
-        Pending
+        <div class="label">Pending</div>
       </div>
 
       <div class="metric-card">
-        <div class="icon">👨‍🍳</div>
+        <div class="icon"></div>
         <div class="value"><%= stats?.preparing || 0 %></div>
-        Preparing
+        <div class="label">Preparing</div>
       </div>
 
       <div class="metric-card">
-        <div class="icon">✅</div>
+        <div class="icon"></div>
         <div class="value"><%= stats?.completed || 0 %></div>
         Completed
       </div>
@@ -110,7 +110,7 @@
             </form>
 
           <% } else { %>
-            <p>Completed ✔</p>
+            <p>Completed </p>
           <% } %>
 
         </div>
@@ -122,7 +122,7 @@
 
 </div>
 
-<!-- ✅ ADD TOGGLE SCRIPT ONLY -->
+<!--  ADD TOGGLE SCRIPT ONLY -->
 <script src="/js/script.js"></script>
 
 </body>

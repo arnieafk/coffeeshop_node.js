@@ -10,7 +10,7 @@
 
 <header class="top-header">
     <div class="user-info">
-        <span>👨‍💼 Staff Dashboard</span>
+        <span>Staff Dashboard</span>
     </div>
 
     <div class="user-info">
@@ -26,9 +26,9 @@
 <div class="container">
 
 <nav class="sidebar">
-    <h2>☕ Staff Panel</h2>
-    <a href="/staff">📊 Dashboard</a>
-    <a href="/staff/orders">📋 Orders</a>
+    <h2> Staff Panel</h2>
+    <a href="/staff"> Dashboard</a>
+    <a href="/staff/orders"> Orders</a>
 </nav>
 
 
@@ -45,7 +45,7 @@ Order Management
 <div class="metrics-grid">
 
     <div class="metric-card">
-        <div class="icon">⏳</div>
+        <div class="icon"></div>
         <div class="value">
             <%= typeof orders !== 'undefined'
                 ? orders.filter(o => o.status === 'Pending').length
@@ -55,7 +55,7 @@ Order Management
     </div>
 
     <div class="metric-card">
-        <div class="icon">👨‍🍳</div>
+        <div class="icon"></div>
         <div class="value">
             <%= typeof orders !== 'undefined'
                 ? orders.filter(o => o.status === 'Preparing').length
@@ -65,7 +65,7 @@ Order Management
     </div>
 
     <div class="metric-card">
-        <div class="icon">✅</div>
+        <div class="icon"></div>
         <div class="value">
             <%= typeof orders !== 'undefined'
                 ? orders.filter(o => o.status === 'Completed').length
@@ -184,7 +184,7 @@ Order Management
 <% } else { %>
 
 <div class="card" style="text-align:center;">
-    <div style="font-size:3rem;">📋</div>
+    <div style="font-size:3rem;"></div>
     <h3>No Orders</h3>
 </div>
 

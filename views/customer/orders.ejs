@@ -10,7 +10,7 @@
   <!-- Top Header Bar -->
   <header class="top-header">
     <div class="user-info">
-      <span>☕ Coffee Shop</span>
+      <span> Coffee Shop</span>
     </div>
     <div class="user-info">
       <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Customer' %></span>
@@ -21,11 +21,11 @@
   <div class="container">
     <!-- Persistent Left Sidebar -->
     <nav class="sidebar">
-      <h2>☕ Menu</h2>
-      <a href="/customer">🏠 Dashboard</a>
-      <a href="/customer/menu">📖 Browse Menu</a>
-      <a href="/customer/cart">🛒 Cart <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>(<%= cartCount %>)<% } %></a>
-      <a href="/customer/orders">📋 My Orders</a>
+      <h2> Menu</h2>
+      <a href="/customer"> Dashboard</a>
+      <a href="/customer/menu"> Browse Menu</a>
+      <a href="/customer/cart"> Cart <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>(<%= cartCount %>)<% } %></a>
+      <a href="/customer/orders"> My Orders</a>
     </nav>
 
     <!-- Main Content Area -->
@@ -34,7 +34,7 @@
 
       <% if (typeof orders === 'undefined' || !orders.length) { %>
         <div class="card" style="text-align: center;">
-          <div style="font-size: 4rem; margin-bottom: 20px;">📋</div>
+          <div style="font-size: 4rem; margin-bottom: 20px;"></div>
           <h3>No orders yet</h3>
           <p>You haven't placed any orders. Start by browsing our delicious menu!</p>
           <a href="/customer/menu" class="btn btn-primary" style="margin-top: 20px;">Browse Menu</a>
@@ -64,7 +64,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
                   <div style="display: flex; align-items: center; gap: 15px;">
                     <div style="width: 50px; height: 50px; background: var(--latte-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                      <%= item.image || '☕' %>
+                      <%= item.image || '' %>
                     </div>
                     <div>
                       <div style="font-weight: 600; color: var(--espresso-deep);"><%= item.name %></div>

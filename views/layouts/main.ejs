@@ -13,11 +13,11 @@
 <header class="top-header">
 
   <div class="left-header">
-    ☕ Coffee Shop System
+     Coffee Shop System
   </div>
 
   <!-- HAMBURGER BUTTON (MOBILE) -->
-  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <button class="menu-toggle" onclick="toggleSidebar()"></button>
 
   <div class="right-header">
     <% if (currentUser) { %>
@@ -36,28 +36,28 @@
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
 
-    <h2>☕ <%= currentUser.role.toUpperCase() %> PANEL</h2>
+    <h2> <%= currentUser.role.toUpperCase() %> PANEL</h2>
 
     <% if (currentUser.role === 'admin') { %>
       <p class="menu-title">MAIN</p>
-      <a href="/admin">📊 Dashboard</a>
-      <a href="/admin/products">📦 Products</a>
-      <a href="/admin/orders">📋 Orders</a>
-      <a href="/admin/payments">💳 Payments</a>
+      <a href="/admin"> Dashboard</a>
+      <a href="/admin/products"> Products</a>
+      <a href="/admin/orders"> Orders</a>
+      <a href="/admin/payments"> Payments</a>
     <% } %>
 
     <% if (currentUser.role === 'staff') { %>
       <p class="menu-title">MAIN</p>
-      <a href="/staff">📊 Dashboard</a>
-      <a href="/staff/orders">📋 Orders</a>
+      <a href="/staff"> Dashboard</a>
+      <a href="/staff/orders"> Orders</a>
     <% } %>
 
     <% if (currentUser.role === 'customer') { %>
       <p class="menu-title">MAIN</p>
-      <a href="/customer">🏠 Dashboard</a>
-      <a href="/customer/menu">📖 Menu</a>
-      <a href="/customer/cart">🛒 Cart</a>
-      <a href="/customer/orders">📋 Orders</a>
+      <a href="/customer"> Dashboard</a>
+      <a href="/customer/menu"> Menu</a>
+      <a href="/customer/cart"> Cart</a>
+      <a href="/customer/orders"> Orders</a>
     <% } %>
 
   </nav>

@@ -10,7 +10,7 @@
   <!-- Top Header Bar -->
   <header class="top-header">
     <div class="user-info">
-      <span>☕ Coffee Shop</span>
+      <span> Coffee Shop</span>
     </div>
     <div class="user-info">
       <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Customer' %></span>
@@ -21,11 +21,11 @@
   <div class="container">
     <!-- Persistent Left Sidebar -->
     <nav class="sidebar">
-      <h2>☕ Menu</h2>
-      <a href="/customer">🏠 Dashboard</a>
-      <a href="/customer/menu">📖 Browse Menu</a>
-      <a href="/customer/cart">🛒 Cart <% if (typeof cart !== 'undefined') { %>(<%= cart.length %>)<% } %></a>
-      <a href="/customer/orders">📋 My Orders</a>
+      <h2> Menu</h2>
+      <a href="/customer"> Dashboard</a>
+      <a href="/customer/menu"> Browse Menu</a>
+      <a href="/customer/cart"> Cart <% if (typeof cart !== 'undefined') { %>(<%= cart.length %>)<% } %></a>
+      <a href="/customer/orders"> My Orders</a>
     </nav>
 
     <!-- Main Content Area -->
@@ -34,7 +34,7 @@
 
       <% if (typeof cart === 'undefined' || !cart.length) { %>
         <div class="card" style="text-align: center;">
-          <div style="font-size: 4rem; margin-bottom: 20px;">🛒</div>
+          <div style="font-size: 4rem; margin-bottom: 20px;"></div>
           <h3>Your cart is empty</h3>
           <p>Add some delicious items from our menu!</p>
           <a href="/customer/menu" class="btn btn-primary" style="margin-top: 20px;">Browse Menu</a>
@@ -46,7 +46,7 @@
           <% cart.forEach(item => { %>
             <div class="cart-item">
               <div class="cart-item-image">
-                <%= item.image || '☕' %>
+                <%= item.image || '' %>
               </div>
               <div class="cart-item-info">
                 <div class="cart-item-name"><%= item.name %></div>
@@ -65,7 +65,7 @@
                 $<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %>
               </div>
               <form method="POST" action="/customer/cart/<%= item.id %>/remove" style="display: inline;">
-                <button type="submit" class="btn-small btn-danger">×</button>
+                <button type="submit" class="btn-small btn-danger">Remove</button>
               </form>
             </div>
           <% }); %>
