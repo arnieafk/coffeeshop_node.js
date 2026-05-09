@@ -4,6 +4,7 @@ const db = require('../config/db');
    GET ALL ORDERS (ADMIN)
 ========================= */
 async function getAllWithUser() {
+
   const [rows] = await db.query(`
     SELECT 
       o.*,
@@ -18,9 +19,10 @@ async function getAllWithUser() {
 }
 
 /* =========================
-   GET ALL ORDERS (STAFF SAFE)
+   GET ALL ORDERS (STAFF OPTIMIZED)
 ========================= */
 async function getAllForStaff() {
+
   const [orders] = await db.query(`
     SELECT
       o.id,
@@ -33,19 +35,38 @@ async function getAllForStaff() {
     ORDER BY o.id DESC
   `);
 
-  for (let order of orders) {
-    const [items] = await db.query(`
-      SELECT 
-        oi.quantity,
-        p.name,
-        p.price
-      FROM order_items oi
-      JOIN products p ON p.id = oi.product_id
-      WHERE oi.order_id = ?
-    `, [order.id]);
-
-    order.items = items;
+  if (!orders.length) {
+    return [];
   }
+
+  const orderIds = orders.map(order => order.id);
+
+  const [items] = await db.query(`
+    SELECT
+      oi.order_id,
+      oi.quantity,
+      p.name,
+      p.price
+    FROM order_items oi
+    JOIN products p ON p.id = oi.product_id
+    WHERE oi.order_id IN (?)
+  `, [orderIds]);
+
+  const groupedItems = {};
+
+  items.forEach(item => {
+
+    if (!groupedItems[item.order_id]) {
+      groupedItems[item.order_id] = [];
+    }
+
+    groupedItems[item.order_id].push(item);
+
+  });
+
+  orders.forEach(order => {
+    order.items = groupedItems[order.id] || [];
+  });
 
   return orders;
 }
@@ -54,6 +75,7 @@ async function getAllForStaff() {
    GET SINGLE ORDER
 ========================= */
 async function getById(orderId) {
+
   const [orders] = await db.query(`
     SELECT
       o.*,
@@ -64,7 +86,9 @@ async function getById(orderId) {
     WHERE o.id = ?
   `, [orderId]);
 
-  if (!orders.length) return null;
+  if (!orders.length) {
+    return null;
+  }
 
   const order = orders[0];
 
@@ -87,8 +111,10 @@ async function getById(orderId) {
    GET CUSTOMER ORDERS
 ========================= */
 async function getByUserId(userId) {
+
   const [rows] = await db.query(`
-    SELECT * FROM orders
+    SELECT *
+    FROM orders
     WHERE user_id = ?
     ORDER BY id DESC
   `, [userId]);
@@ -100,9 +126,11 @@ async function getByUserId(userId) {
    CREATE ORDER (TRANSACTION SAFE)
 ========================= */
 async function createOrder(userId, cartItems) {
+
   const conn = await db.getConnection();
 
   try {
+
     await conn.beginTransaction();
 
     let total = 0;
@@ -114,15 +142,17 @@ async function createOrder(userId, cartItems) {
     const [orderResult] = await conn.query(`
       INSERT INTO orders (user_id, status, total)
       VALUES (?, ?, ?)
-    `, [userId, 'Pending', total]);
+    `, [userId, 'pending', total]);
 
     const orderId = orderResult.insertId;
 
     for (const item of cartItems) {
+
       await conn.query(`
         INSERT INTO order_items (order_id, product_id, quantity)
         VALUES (?, ?, ?)
       `, [orderId, item.id, item.quantity]);
+
     }
 
     await conn.query(`
@@ -131,14 +161,18 @@ async function createOrder(userId, cartItems) {
     `, [orderId, 'Waiting Verification']);
 
     await conn.commit();
+
     return orderId;
 
   } catch (error) {
+
     await conn.rollback();
     throw error;
 
   } finally {
+
     conn.release();
+
   }
 }
 
@@ -146,17 +180,20 @@ async function createOrder(userId, cartItems) {
    UPDATE ORDER STATUS
 ========================= */
 async function updateStatus(orderId, status) {
+
   await db.query(`
     UPDATE orders
     SET status = ?
     WHERE id = ?
   `, [status, orderId]);
+
 }
 
 /* =========================
    GET ORDER ITEMS
 ========================= */
 async function getOrderItems(orderId) {
+
   const [rows] = await db.query(`
     SELECT
       oi.quantity,

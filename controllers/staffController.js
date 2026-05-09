@@ -4,6 +4,7 @@ const Order = require('../models/Order');
    GET DASHBOARD STATS
 ====================== */
 async function getStats() {
+
   try {
 
     const orders = await Order.getAllForStaff();
@@ -35,6 +36,7 @@ async function getStats() {
     return stats;
 
   } catch (error) {
+
     console.error(error);
 
     return {
@@ -42,6 +44,7 @@ async function getStats() {
       preparing: 0,
       completed: 0
     };
+
   }
 }
 
@@ -49,13 +52,49 @@ async function getStats() {
    GET DASHBOARD ORDERS
 ====================== */
 async function getOrders() {
+
   try {
 
     return await Order.getAllForStaff();
 
   } catch (error) {
+
     console.error(error);
     return [];
+
+  }
+}
+
+/* ======================
+   STAFF DASHBOARD
+====================== */
+async function dashboard(req, res) {
+
+  try {
+
+    const stats = await getStats();
+    const orders = await getOrders();
+
+    res.render('dashboard/staff', {
+      user: req.session.user,
+      stats,
+      orders
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.render('dashboard/staff', {
+      user: req.session.user,
+      stats: {
+        pending: 0,
+        preparing: 0,
+        completed: 0
+      },
+      orders: []
+    });
+
   }
 }
 
@@ -119,6 +158,7 @@ async function updateOrderStatus(req, res) {
 }
 
 module.exports = {
+  dashboard,
   getStats,
   getOrders,
   listOrders,
