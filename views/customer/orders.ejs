@@ -82,16 +82,21 @@
             <div style="background: rgba(215, 184, 153, 0.1); padding: 15px; border-radius: 8px;">
               <h4 style="margin: 0 0 10px 0; color: var(--espresso-deep);">Order Status</h4>
               <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <%
+                  const pendingColor = (order.status === 'pending' || order.status === 'preparing' || order.status === 'completed') ? '#28a745' : '#6c757d';
+                  const preparingColor = (order.status === 'preparing' || order.status === 'completed') ? '#28a745' : '#6c757d';
+                  const completedColor = order.status === 'completed' ? '#28a745' : '#6c757d';
+                %>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%; background: <%= order.status === 'pending' || order.status === 'preparing' || order.status === 'completed' ? '#28a745' : '#6c757d' %>;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 50%;" data-color="<%= pendingColor %>"></div>
                   <span style="font-size: 0.9rem;">Order Placed</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%; background: <%= order.status === 'preparing' || order.status === 'completed' ? '#28a745' : '#6c757d' %>;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 50%;" data-color="<%= preparingColor %>"></div>
                   <span style="font-size: 0.9rem;">Preparing</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%; background: <%= order.status === 'completed' ? '#28a745' : '#6c757d' %>;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 50%;" data-color="<%= completedColor %>"></div>
                   <span style="font-size: 0.9rem;">Ready for Pickup</span>
                 </div>
               </div>
@@ -105,5 +110,10 @@
       <% } %>
     </main>
   </div>
+  <script>
+    document.querySelectorAll('[data-color]').forEach(el => {
+      el.style.backgroundColor = el.getAttribute('data-color');
+    });
+  </script>
 </body>
 </html>
