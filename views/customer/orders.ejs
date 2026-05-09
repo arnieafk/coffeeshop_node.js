@@ -46,7 +46,7 @@
               <div>
                 <h3 style="margin: 0;">Order #<%= order.id %></h3>
                 <p style="margin: 5px 0; color: var(--text-main); opacity: 0.8;">
-                  <%= new Date(order.created_at).toLocaleDateString() %> at <%= new Date(order.created_at).toLocaleTimeString() %>
+                  <%= formatManilaDateTime(order.created_at) %>
                 </p>
               </div>
               <div style="text-align: right;">

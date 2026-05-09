@@ -1,5 +1,26 @@
 const db = require('../config/db');
 
+function getManilaTimestamp() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+
+  const normalized = {};
+  parts.forEach(({ type, value }) => {
+    if (type !== 'literal') normalized[type] = value;
+  });
+
+  return `${normalized.year}-${normalized.month}-${normalized.day} ${normalized.hour}:${normalized.minute}:${normalized.second}`;
+}
+
 /* =========================
    GET ALL ORDERS (ADMIN)
 ========================= */
@@ -127,6 +148,7 @@ async function getByUserId(userId) {
 ========================= */
 async function createOrder(userId, cartItems) {
 
+  const createdAt = getManilaTimestamp();
   const conn = await db.getConnection();
 
   try {
@@ -140,9 +162,9 @@ async function createOrder(userId, cartItems) {
     }
 
     const [orderResult] = await conn.query(`
-      INSERT INTO orders (user_id, status, total)
-      VALUES (?, ?, ?)
-    `, [userId, 'pending', total]);
+      INSERT INTO orders (user_id, status, total, created_at)
+      VALUES (?, ?, ?, ?)
+    `, [userId, 'pending', total, createdAt]);
 
     const orderId = orderResult.insertId;
 
@@ -156,9 +178,9 @@ async function createOrder(userId, cartItems) {
     }
 
     await conn.query(`
-      INSERT INTO payments (order_id, status)
-      VALUES (?, ?)
-    `, [orderId, 'Waiting Verification']);
+      INSERT INTO payments (order_id, status, created_at)
+      VALUES (?, ?, ?)
+    `, [orderId, 'Waiting Verification', createdAt]);
 
     await conn.commit();
 

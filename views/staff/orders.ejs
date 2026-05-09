@@ -96,7 +96,7 @@ Order Management
             <p style="margin:5px 0;opacity:0.7;">
                 <%= order.customer_name %>
                 •
-                <%= new Date(order.created_at).toLocaleString() %>
+                <%= formatManilaDateTime(order.created_at) %>
             </p>
         </div>
 

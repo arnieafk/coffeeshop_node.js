@@ -120,8 +120,7 @@ $<%= Number(order.total).toFixed(2) %>
 
 <p>
 <strong>Date:</strong>
-<%= new Date(order.created_at)
-.toLocaleString() %>
+<%= formatManilaDateTime(order.created_at) %>
 </p>
 
 </div>

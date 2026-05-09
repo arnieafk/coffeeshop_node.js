@@ -64,7 +64,7 @@
                   <td style="font-size: 0.9rem;"><%= order.customer_email %></td>
                   <td><span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span></td>
                   <td style="font-weight: 600; color: var(--espresso-deep);">$<%= Number(order.total).toFixed(2) %></td>
-                  <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                  <td><%= formatManilaDateTime(order.created_at) %></td>
                   <td class="actions">
                     <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">👁️ View</a>
                     <% if (order.status === 'Pending') { %>

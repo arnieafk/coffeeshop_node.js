@@ -20,6 +20,46 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+const MANILA_TIME_ZONE = 'Asia/Manila';
+
+function normalizeToManilaDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+
+  const dateString = String(value).trim();
+  const manilaIso = dateString.replace(' ', 'T');
+
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(manilaIso)) {
+    return new Date(`${manilaIso}+08:00`);
+  }
+
+  return new Date(value);
+}
+
+function formatManilaDateTime(value) {
+  const date = normalizeToManilaDate(value);
+  if (!date || Number.isNaN(date.getTime())) return '';
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: MANILA_TIME_ZONE,
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).formatToParts(date);
+
+  const output = {};
+  parts.forEach(({ type, value: partValue }) => {
+    if (type !== 'literal') output[type] = partValue;
+  });
+
+  return `${output.month} ${output.day}, ${output.year} ${output.hour}:${output.minute} ${output.dayPeriod}`;
+}
+
+app.locals.formatManilaDateTime = formatManilaDateTime;
+
 /* ======================
    MIDDLEWARES
 ====================== */
