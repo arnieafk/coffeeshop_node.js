@@ -94,9 +94,7 @@ Order Management
             </h4>
 
             <p style="margin:5px 0;opacity:0.7;">
-                <%= order.customer_name %>
-                •
-                <%= formatManilaDateTime(order.created_at) %>
+                <%= order.customer_name %> - <%= formatManilaDateTime(order.created_at) %>
             </p>
         </div>
 
@@ -125,7 +123,7 @@ Order Management
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">
 
             <span>
-                <%= item.name %> × <%= item.quantity %>
+                <%= item.name %> (Qty: <%= item.quantity %>)
             </span>
 
             <span>
