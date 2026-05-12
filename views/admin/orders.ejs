@@ -7,86 +7,78 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Top Header Bar -->
-  <header class="top-header">
-    <div class="user-info">
-      <span> Admin Dashboard</span>
-    </div>
-    <div class="user-info">
-      <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
+<header class="top-header">
+  <div class="left-header">Coffee Shop System</div>
+  <button class="menu-toggle" onclick="toggleSidebar()"></button>
+  <div class="user-info">
+    <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+</header>
+<div class="container">
+  <nav class="sidebar" id="sidebar">
+    <h2>ADMIN PANEL</h2>
+    <p class="menu-title">MAIN</p>
+    <a href="/admin">Dashboard</a>
+    <a href="/admin/products">Products</a>
+    <a href="/admin/orders" class="active">Orders</a>
+    <a href="/admin/payments">Payments</a>
+    <div class="sidebar-footer">
       <a href="/logout" class="logout-btn">Logout</a>
     </div>
-  </header>
-
-  <div class="container">
-    <!-- Persistent Left Sidebar -->
-    <nav class="sidebar">
-      <h2> Admin Panel</h2>
-      <a href="/admin"> Dashboard</a>
-      <a href="/admin/products"> Products</a>
-      <a href="/admin/orders"> Orders</a>
-      <a href="/admin/payments"> Payments</a>
-    </nav>
-
-    <!-- Main Content Area -->
-    <main class="main">
-      <div class="header">Orders Management</div>
-
-      <!-- Quick Actions -->
-      <div class="card">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <a href="/admin/products" class="btn btn-secondary"> Manage Products</a>
-          <a href="/admin/payments" class="btn btn-secondary"> View Payments</a>
-          <a href="/admin" class="btn btn-secondary"> Back to Dashboard</a>
-        </div>
-      </div>
-
-      <!-- Orders Table -->
-      <% if (typeof orders !== 'undefined' && orders.length > 0) { %>
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% orders.forEach(order => { %>
-                <tr>
-                  <td style="font-weight: 600;">#<%= order.id %></td>
-                  <td><%= order.customer_name %></td>
-                  <td style="font-size: 0.9rem;"><%= order.customer_email %></td>
-                  <td><span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span></td>
-                  <td style="font-weight: 600; color: var(--espresso-deep);">$<%= Number(order.total).toFixed(2) %></td>
-                  <td><%= formatManilaDateTime(order.created_at) %></td>
-                  <td class="actions">
-                    <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">View</a>
-                    <% if (order.status === 'Pending') { %>
-                      <form method="POST" action="/admin/orders/<%= order.id %>/status" style="display: inline;">
-                        <input type="hidden" name="status" value="Preparing">
-                        <button type="submit" class="btn btn-small btn-success"> Confirm</button>
-                      </form>
-                    <% } %>
-                  </td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
-        </div>
-      <% } else { %>
-        <div class="card" style="text-align: center;">
-          <div style="font-size: 3rem; margin-bottom: 20px;"></div>
-          <h3>No Orders Found</h3>
-          <p>All orders have been processed!</p>
-        </div>
-      <% } %>
-    </main>
-  </div>
+  </nav>
+  <main class="main">
+    <div class="header">Orders Management</div>
+    <div class="card card-actions">
+      <a href="/admin/products" class="btn btn-secondary">Manage Products</a>
+      <a href="/admin/payments" class="btn btn-secondary">View Payments</a>
+      <a href="/admin" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+    <% if (typeof orders !== 'undefined' && orders.length > 0) { %>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+          <tr>
+            <td><strong>#<%= order.id %></strong></td>
+            <td><%= order.customer_name %></td>
+            <td class="text-muted"><%= order.customer_email %></td>
+            <td><span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span></td>
+            <td><strong class="order-item-price">$<%= Number(order.total).toFixed(2) %></strong></td>
+            <td><%= formatManilaDateTime(order.created_at) %></td>
+            <td class="actions">
+              <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">View</a>
+              <% if (order.status === 'Pending') { %>
+              <form method="POST" action="/admin/orders/<%= order.id %>/status" class="inline-form">
+                <input type="hidden" name="status" value="Preparing">
+                <button type="submit" class="btn btn-small btn-success">Confirm</button>
+              </form>
+              <% } %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } else { %>
+    <div class="card empty-state">
+      <h3>No Orders Found</h3>
+      <p>All orders have been processed!</p>
+    </div>
+    <% } %>
+  </main>
+</div>
+<script src="/js/script.js"></script>
 </body>
 </html>

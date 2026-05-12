@@ -12,47 +12,24 @@ content="width=device-width, initial-scale=1.0">
 <body>
 
 <header class="top-header">
-    <div class="user-info">
-        <span> Admin Dashboard</span>
-    </div>
-
-    <div class="user-info">
-        <span>
-            Welcome,
-            <%= typeof user !== 'undefined'
-                ? user.name
-                : 'Admin' %>
-        </span>
-
-        <a href="/logout"
-           class="logout-btn">
-           Logout
-        </a>
-    </div>
+  <div class="left-header">Coffee Shop System</div>
+  <button class="menu-toggle" onclick="toggleSidebar()"></button>
+  <div class="user-info">
+    <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
 </header>
 
 
 
 <div class="container">
 
-<nav class="sidebar">
-    <h2> Admin Panel</h2>
-
-    <a href="/admin">
-       Dashboard
-    </a>
-
-    <a href="/admin/products">
-       Products
-    </a>
-
-    <a href="/admin/orders">
-       Orders
-    </a>
-
-    <a href="/admin/payments">
-       Payments
-    </a>
+<nav class="sidebar" id="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="/admin">Dashboard</a>
+    <a href="/admin/products">Products</a>
+    <a href="/admin/orders">Orders</a>
+    <a href="/admin/payments">Payments</a>
 </nav>
 
 
@@ -65,149 +42,77 @@ Order #<%= order.id %> Details
 
 
 
-<div class="card">
-<div style="display:flex;gap:15px;flex-wrap:wrap;">
-<a href="/admin/orders"
-class="btn btn-secondary">
- Back to Orders
-</a>
-
-<a href="/admin/payments"
-class="btn btn-secondary">
- Payments
-</a>
-</div>
+<div class="card btn-link-group">
+  <a href="/admin/orders" class="btn btn-secondary">Back to Orders</a>
+  <a href="/admin/payments" class="btn btn-secondary">Payments</a>
 </div>
 
 
 
 <!-- Order Summary -->
 <div class="card">
-<h2> Order Information</h2>
+  <h2 class="order-section-title">Order Information</h2>
 
-<p>
-<strong>Order ID:</strong>
-#<%= order.id %>
-</p>
-
-<p>
-<strong>Customer:</strong>
-<%= order.customer_name %>
-</p>
-
-<p>
-<strong>Email:</strong>
-<%= order.customer_email %>
-</p>
-
-<p>
-<strong>Status:</strong>
-
-<span style="
-padding:8px 14px;
-border-radius:20px;
-font-weight:600;
-background:#d4edda;">
-<%= order.status %>
-</span>
-
-</p>
-
-<p>
-<strong>Total:</strong>
-$<%= Number(order.total).toFixed(2) %>
-</p>
-
-<p>
-<strong>Date:</strong>
-<%= formatManilaDateTime(order.created_at) %>
-</p>
-
+  <p><strong>Order ID:</strong> #<%= order.id %></p>
+  <p><strong>Customer:</strong> <%= order.customer_name %></p>
+  <p><strong>Email:</strong> <%= order.customer_email %></p>
+  <p><strong>Status:</strong> <span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span></p>
+  <p><strong>Total:</strong> $<%= Number(order.total).toFixed(2) %></p>
+  <p><strong>Date:</strong> <%= formatManilaDateTime(order.created_at) %></p>
 </div>
 
 
 
 <!-- Ordered Items -->
 <div class="card">
+  <h2 class="order-section-title">Ordered Items</h2>
 
-<h2 style="margin-bottom:20px;">
- Ordered Items
-</h2>
+  <% if(order.items && order.items.length > 0){ %>
 
-<% if(order.items && order.items.length > 0){ %>
+  <div class="table-container">
+  <table class="table">
 
-<div class="table-container">
-<table class="table">
+  <thead>
+  <tr>
+  <th>Product</th>
+  <th>Price</th>
+  <th>Qty</th>
+  <th>Subtotal</th>
+  </tr>
+  </thead>
 
-<thead>
-<tr>
-<th>Product</th>
-<th>Price</th>
-<th>Qty</th>
-<th>Subtotal</th>
-</tr>
-</thead>
+  <tbody>
 
-<tbody>
+  <% order.items.forEach(item=>{ %>
+  <tr>
+    <td class="order-item-name"><%= item.name %></td>
+    <td>$<%= Number(item.price).toFixed(2) %></td>
+    <td><%= item.quantity %></td>
+    <td class="order-item-price">$<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %></td>
+  </tr>
+  <% }) %>
 
-<% order.items.forEach(item=>{ %>
+  </tbody>
 
-<tr>
+  </table>
+  </div>
 
-<td style="font-weight:600;">
-<%= item.name %>
-</td>
-
-<td>
-$<%= Number(item.price).toFixed(2) %>
-</td>
-
-<td>
-<%= item.quantity %>
-</td>
-
-<td style="font-weight:600;">
-$<%= (
-Number(item.price)
-*
-Number(item.quantity)
-).toFixed(2) %>
-</td>
-
-</tr>
-
-<% }) %>
-
-</tbody>
-
-</table>
-</div>
-
-<% } else { %>
-
-<p>No items found.</p>
-
-<% } %>
-
+  <% } else { %>
+    <p>No items found.</p>
+  <% } %>
 </div>
 
 
 
 <!-- Admin Notes -->
 <div class="card">
-
-<h3> Order Monitoring</h3>
-
-<ul style="
-line-height:1.8;
-padding-left:20px;
-">
-<li>Review customer order details carefully</li>
-<li>Confirm payment before fulfillment</li>
-<li>Monitor order status updates</li>
-<li>Track completed and pending orders</li>
-</ul>
-
+  <h3>Order Monitoring</h3>
+  <ul class="list-notes">
+    <li>Review customer order details carefully</li>
+    <li>Confirm payment before fulfillment</li>
+    <li>Monitor order status updates</li>
+    <li>Track completed and pending orders</li>
+  </ul>
 </div>
 
 
