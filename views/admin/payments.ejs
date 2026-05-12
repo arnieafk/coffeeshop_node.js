@@ -8,27 +8,31 @@
 </head>
 
 <body>
+
+<!-- Top Header -->
 <header class="top-header">
-  <div class="left-header">Coffee Shop System</div>
-  <button class="menu-toggle" onclick="toggleSidebar()"></button>
-  <div class="user-info">
-    <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
-    <a href="/logout" class="logout-btn">Logout</a>
-  </div>
+    <div class="user-info">
+        <span> Admin Dashboard</span>
+    </div>
+
+    <div class="user-info">
+        <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
 </header>
 
+
 <div class="container">
-  <nav class="sidebar" id="sidebar">
-    <h2>ADMIN PANEL</h2>
-    <p class="menu-title">MAIN</p>
-    <a href="/admin">Dashboard</a>
-    <a href="/admin/products">Products</a>
-    <a href="/admin/orders">Orders</a>
-    <a href="/admin/payments" class="active">Payments</a>
-    <div class="sidebar-footer">
-      <a href="/logout" class="logout-btn">Logout</a>
-    </div>
-  </nav>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <h2> Admin Panel</h2>
+
+        <a href="/admin"> Dashboard</a>
+        <a href="/admin/products"> Products</a>
+        <a href="/admin/orders"> Orders</a>
+        <a href="/admin/payments"> Payments</a>
+    </nav>
 
 
 
@@ -41,22 +45,37 @@
 
 
         <!-- Quick Actions -->
-        <div class="card card-actions">
-            <a href="/admin/products" class="btn btn-secondary">Products</a>
-            <a href="/admin/orders" class="btn btn-secondary">Orders</a>
-            <a href="/admin" class="btn btn-secondary">Dashboard</a>
-        </div>
-
-
-
         <div class="card">
-            <h2>Payment Records</h2>
-            <p>View submitted customer payment information and verification statuses.</p>
+            <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                <a href="/admin/products" class="btn btn-secondary">
+                     Products
+                </a>
+
+                <a href="/admin/orders" class="btn btn-secondary">
+                     Orders
+                </a>
+
+                <a href="/admin" class="btn btn-secondary">
+                     Dashboard
+                </a>
+            </div>
         </div>
 
 
 
+        <!-- Payment Summary -->
+        <div class="card">
+            <h2 style="margin-bottom:15px;"> Payment Records</h2>
+            <p>
+                View submitted customer payment information and verification statuses.
+            </p>
+        </div>
+
+
+
+        <!-- Payments Table -->
         <% if (payments && payments.length > 0) { %>
+
         <div class="table-container">
             <table class="table">
                 <thead>
@@ -67,40 +86,93 @@
                         <th>Status</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <% payments.forEach((p) => { %>
+
+                <% payments.forEach((p)=> { %>
                     <tr>
-                        <td><strong>#<%= p.id %></strong></td>
-                        <td>ORD-<%= p.order_id %></td>
-                        <td><strong><%= p.customer_name %></strong></td>
+                        <td style="font-weight:600;">
+                            #<%= p.id %>
+                        </td>
+
                         <td>
-                            <% if (p.status === 'Pending') { %>
-                            <span class="status-badge status-pending">Pending</span>
-                            <% } else if (p.status === 'Verified') { %>
-                            <span class="status-badge status-completed">Verified</span>
+                            ORD-<%= p.order_id %>
+                        </td>
+
+                        <td style="font-weight:600;">
+                            <%= p.customer_name %>
+                        </td>
+
+                        <td>
+                            <% if(p.status === 'Pending'){ %>
+                                <span style="
+                                padding:8px 14px;
+                                background:#fff3cd;
+                                border-radius:20px;
+                                font-weight:600;">
+                                Pending
+                                </span>
+
+                            <% } else if(p.status === 'Verified'){ %>
+
+                                <span style="
+                                padding:8px 14px;
+                                background:#d4edda;
+                                border-radius:20px;
+                                font-weight:600;">
+                                 Verified
+                                </span>
+
                             <% } else { %>
-                            <span class="status-badge status-<%= p.status.toLowerCase() %>"><%= p.status %></span>
+
+                                <span style="
+                                padding:8px 14px;
+                                background:#f8d7da;
+                                border-radius:20px;
+                                font-weight:600;">
+                                 <%= p.status %>
+                                </span>
+
                             <% } %>
                         </td>
                     </tr>
-                    <% }) %>
+                <% }) %>
+
                 </tbody>
             </table>
         </div>
+
+
         <% } else { %>
-        <div class="card empty-state">
+
+        <!-- Empty State -->
+        <div class="card" style="text-align:center;">
+            <div style="font-size:4rem; margin-bottom:20px;">
+                
+            </div>
+
             <h3>No Payments Found</h3>
-            <p>There are currently no submitted payments to verify.</p>
-            <a href="/admin/orders" class="btn btn-primary">View Orders</a>
+
+            <p>
+                There are currently no submitted payments to verify.
+            </p>
+
+            <a href="/admin/orders"
+               class="btn btn-primary"
+               style="margin-top:20px;">
+               View Orders
+            </a>
         </div>
+
         <% } %>
 
 
 
         <!-- Payment Stats -->
         <div class="card">
-            <h3>Payment Monitoring Tips</h3>
-            <ul>
+            <h3> Payment Monitoring Tips</h3>
+
+            <ul style="line-height:1.8; padding-left:20px;">
                 <li>Check pending payments regularly</li>
                 <li>Verify order IDs before approval</li>
                 <li>Monitor failed or rejected payments</li>
@@ -112,6 +184,6 @@
     </main>
 
 </div>
-<script src="/js/script.js"></script>
+
 </body>
 </html>

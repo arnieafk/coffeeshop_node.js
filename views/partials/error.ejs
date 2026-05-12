@@ -5,13 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Error - Coffee Shop</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .error-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1e1814, #2d241e);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    .error-content {
+      text-align: center;
+      background: rgba(255,255,255,0.1);
+      padding: 40px;
+      border-radius: 15px;
+      max-width: 500px;
+    }
+
+    .error-content h1 {
+      font-size: 3rem;
+      margin: 0 0 20px 0;
+      color: #d7b899;
+    }
+
+    .error-content p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    .error-content a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #d7b899;
+      color: #1e1814;
+      text-decoration: none;
+      border-radius: 20px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .error-content a:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+  </style>
 </head>
 <body>
-  <div class="error-page-container">
-    <div class="error-page-card">
+  <div class="error-container">
+    <div class="error-content">
       <h1>Error</h1>
       <p><%= message || 'Something went wrong' %></p>
-      <a href="/" class="btn btn-primary">Back to Home</a>
+      <a href="/"> Back to Home</a>
     </div>
   </div>
 </body>

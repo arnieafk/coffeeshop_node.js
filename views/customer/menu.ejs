@@ -1,64 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menu - Coffee Shop</title>
-  <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Coffee Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <!-- Top Header Bar -->
   <header class="top-header">
-    <div class="left-header">Coffee Shop System</div>
-    <button class="menu-toggle" onclick="toggleSidebar()"></button>
+    <div class="user-info">
+      <span> Coffee Shop</span>
+    </div>
     <div class="user-info">
       <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Customer' %></span>
       <a href="/logout" class="logout-btn">Logout</a>
     </div>
   </header>
+
   <div class="container">
-    <nav class="sidebar" id="sidebar">
-      <h2>CUSTOMER PANEL</h2>
+    <!-- Persistent Left Sidebar -->
+    <nav class="sidebar">
+      <h2> CUSTOMER PANEL</h2>
       <p class="menu-title">MAIN</p>
-      <a href="/customer">Dashboard</a>
-      <a href="/customer/menu">Browse Menu</a>
-      <a href="/customer/cart">Cart<% if (typeof cart !== 'undefined' && cart.length) { %> (<%= cart.length %>)<% } %></a>
-      <a href="/customer/orders">My Orders</a>
-      <div class="sidebar-footer">
-        <a href="/logout" class="logout-btn">Logout</a>
-      </div>
+      <a href="/customer"> Dashboard</a>
+      <a href="/customer/menu"> Browse Menu</a>
+      <a href="/customer/cart"> Cart <% if (typeof cart !== 'undefined') { %>(<%= cart.length %>)<% } %></a>
+      <a href="/customer/orders"> My Orders</a>
     </nav>
+
+    <!-- Main Content Area -->
     <main class="main">
-      <div class="header">Our Menu</div>
-      <div class="section-intro">
-        <p>Discover a carefully curated selection of premium coffee, fresh pastries, and delightful treats. Add items to your cart and place your order with confidence.</p>
+      <div class="header"> Our Menu</div>
+
+      <!-- Menu Introduction -->
+      <div class="card">
+        <p style="margin: 0; font-size: 1.05rem; line-height: 1.8;">
+          Discover our carefully curated selection of premium coffee, fresh pastries, and delicious treats. 
+          Every item is prepared with love and the finest ingredients. Ready to place an order? 
+          <strong>Add items to your cart and checkout!</strong> 
+        </p>
       </div>
+
+      <!-- Products Grid -->
       <% if (typeof products !== 'undefined' && products.length > 0) { %>
-      <div class="product-grid">
-        <% products.forEach(product => { %>
-        <div class="product-card">
-          <div class="product-image"></div>
-          <div class="product-info">
-            <div class="product-name"><%= product.name %></div>
-            <div class="product-description"><%= product.description && product.description.trim() !== '' ? product.description : 'Freshly prepared using premium ingredients.' %></div>
-            <div class="product-price">$<%= Number(product.price).toFixed(2) %></div>
-            <div class="product-actions">
-              <form method="POST" action="/customer/menu/<%= product.id %>/add">
-                <button type="submit" class="btn btn-primary btn-full">Add to Cart</button>
-              </form>
+        <div class="products-grid">
+          <% products.forEach(product => { %>
+            <div class="product-card">
+              <div class="product-image">
+                <span style="font-size: 3.5rem; line-height: 1;"></span>
+              </div>
+              <div class="product-info">
+                <div class="product-name"><%= product.name %></div>
+                <div class="product-description">
+                  <%= product.description && product.description.trim() !== '' 
+                    ? product.description 
+                    : 'Freshly prepared with premium ingredients and love ' 
+                  %>
+                </div>
+                <div class="product-price">${<%= Number(product.price).toFixed(2) %></div>
+                <div class="product-actions">
+                  <form method="POST" action="/customer/menu/<%= product.id %>/add" style="width: 100%;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"> Add to Cart</button>
+                  </form>
+                </div>
+              </div>
             </div>
-          </div>
+          <% }); %>
         </div>
-        <% }); %>
-      </div>
       <% } else { %>
-      <div class="card empty-state">
-        <h3>No Items Available</h3>
-        <p>We are updating the menu with new coffee and snacks. Please check back soon.</p>
-        <a href="/customer" class="btn btn-primary">Back to Dashboard</a>
-      </div>
+        <div class="card" style="text-align: center; padding: 50px;">
+          <div style="font-size: 4rem; margin-bottom: 20px;"></div>
+          <h3 style="font-size: 1.5rem; color: var(--espresso-deep); margin-bottom: 10px;">No Items Available</h3>
+          <p style="color: #666; margin-bottom: 20px; font-size: 1.05rem;">
+            We're currently updating our menu with exciting new items. Please check back soon!
+          </p>
+          <a href="/customer" class="btn btn-primary"> Back to Dashboard</a>
+        </div>
       <% } %>
     </main>
   </div>
-  <script src="/js/script.js"></script>
 </body>
 </html>

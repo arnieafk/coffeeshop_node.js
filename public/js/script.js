@@ -1,6 +1,7 @@
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
+﻿function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
   if (sidebar) {
-    sidebar.classList.toggle('active');
+    sidebar.classList.toggle("active");
   }
 }
+

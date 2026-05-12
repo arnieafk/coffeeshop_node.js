@@ -1,80 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cart - Coffee Shop</title>
-  <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Coffee Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <!-- Top Header Bar -->
   <header class="top-header">
-    <div class="left-header">Coffee Shop System</div>
-    <button class="menu-toggle" onclick="toggleSidebar()"></button>
+    <div class="user-info">
+      <span> Coffee Shop</span>
+    </div>
     <div class="user-info">
       <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Customer' %></span>
       <a href="/logout" class="logout-btn">Logout</a>
     </div>
   </header>
+
   <div class="container">
-    <nav class="sidebar" id="sidebar">
-      <h2>CUSTOMER PANEL</h2>
-      <p class="menu-title">MAIN</p>
-      <a href="/customer">Dashboard</a>
-      <a href="/customer/menu">Browse Menu</a>
-      <a href="/customer/cart">Cart<% if (typeof cart !== 'undefined' && cart.length) { %> (<%= cart.length %>)<% } %></a>
-      <a href="/customer/orders">My Orders</a>
-      <div class="sidebar-footer">
-        <a href="/logout" class="logout-btn">Logout</a>
-      </div>
+    <!-- Persistent Left Sidebar -->
+    <nav class="sidebar">
+      <h2> Menu</h2>
+      <a href="/customer"> Dashboard</a>
+      <a href="/customer/menu"> Browse Menu</a>
+      <a href="/customer/cart"> Cart <% if (typeof cart !== 'undefined') { %>(<%= cart.length %>)<% } %></a>
+      <a href="/customer/orders"> My Orders</a>
     </nav>
+
+    <!-- Main Content Area -->
     <main class="main">
       <div class="header">Your Cart</div>
+
       <% if (typeof cart === 'undefined' || !cart.length) { %>
-      <div class="card empty-state">
-        <h3>Your cart is empty</h3>
-        <p>Add delicious items from our menu to continue.</p>
-        <a href="/customer/menu" class="btn btn-primary">Browse Menu</a>
-      </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 4rem; margin-bottom: 20px;"></div>
+          <h3>Your cart is empty</h3>
+          <p>Add some delicious items from our menu!</p>
+          <a href="/customer/menu" class="btn btn-primary" style="margin-top: 20px;">Browse Menu</a>
+        </div>
       <% } else { %>
-      <div class="card">
-        <h3>Cart Items</h3>
-        <% cart.forEach(item => { %>
-        <div class="cart-item">
-          <div class="cart-item-meta">
-            <div class="cart-item-name"><%= item.name %></div>
-            <div class="cart-item-price">$<%= Number(item.price).toFixed(2) %> each</div>
+        <!-- Cart Items -->
+        <div class="card">
+          <h3>Cart Items</h3>
+          <% cart.forEach(item => { %>
+            <div class="cart-item">
+              <div class="cart-item-image">
+                <%= item.image || '' %>
+              </div>
+              <div class="cart-item-info">
+                <div class="cart-item-name"><%= item.name %></div>
+                <div class="cart-item-price">$<%= Number(item.price).toFixed(2) %> each</div>
+              </div>
+              <div class="quantity-controls">
+                <form method="POST" action="/customer/cart/<%= item.id %>/decrease" style="display: inline;">
+                  <button type="submit" class="quantity-btn">-</button>
+                </form>
+                <span class="quantity-display"><%= item.quantity %></span>
+                <form method="POST" action="/customer/cart/<%= item.id %>/increase" style="display: inline;">
+                  <button type="submit" class="quantity-btn">+</button>
+                </form>
+              </div>
+              <div style="font-weight: 600; color: var(--espresso-deep);">
+                $<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %>
+              </div>
+              <form method="POST" action="/customer/cart/<%= item.id %>/remove" style="display: inline;">
+                <button type="submit" class="btn-small btn-danger">Remove</button>
+              </form>
+            </div>
+          <% }); %>
+        </div>
+
+        <!-- Cart Total and Checkout -->
+        <div class="cart-total">
+          <div style="margin-bottom: 15px;">
+            <div style="font-size: 1.1rem; margin-bottom: 10px;">Total Items: <%= cart.reduce((sum, item) => sum + item.quantity, 0) %></div>
+            <div class="total-amount">Total: $<%= typeof total !== 'undefined' ? total.toFixed(2) : '0.00' %></div>
           </div>
-          <div class="quantity-controls">
-            <form method="POST" action="/customer/cart/<%= item.id %>/decrease">
-              <button type="submit" class="quantity-btn">-</button>
-            </form>
-            <span class="quantity-display"><%= item.quantity %></span>
-            <form method="POST" action="/customer/cart/<%= item.id %>/increase">
-              <button type="submit" class="quantity-btn">+</button>
-            </form>
-          </div>
-          <div class="order-item-price">$<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %></div>
-          <form method="POST" action="/customer/cart/<%= item.id %>/remove">
-            <button type="submit" class="btn btn-danger btn-small">Remove</button>
+          <form method="POST" action="/customer/orders/place">
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">Place Order</button>
           </form>
         </div>
-        <% }); %>
-      </div>
-      <div class="cart-total">
-        <div>
-          <div class="order-meta">Total Items: <%= cart.reduce((sum, item) => sum + item.quantity, 0) %></div>
-          <div class="total-amount">Total: $<%= typeof total !== 'undefined' ? total.toFixed(2) : '0.00' %></div>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="/customer/menu" class="btn btn-secondary">Continue Shopping</a>
         </div>
-        <form method="POST" action="/customer/orders/place">
-          <button type="submit" class="btn btn-primary btn-full">Place Order</button>
-        </form>
-      </div>
-      <div class="card-actions">
-        <a href="/customer/menu" class="btn btn-secondary">Continue Shopping</a>
-      </div>
       <% } %>
     </main>
   </div>
-  <script src="/js/script.js"></script>
 </body>
 </html>
