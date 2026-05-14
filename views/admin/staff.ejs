@@ -74,9 +74,9 @@
 
             <tr>
 
-              <!-- ID -->
+              <!-- ID (clean display, no fake formatting) -->
               <td style="font-weight:700;">
-                #<%= member.id %>
+                <%= member.id %>
               </td>
 
               <!-- NAME -->
@@ -84,14 +84,14 @@
                 <%= member.name %>
               </td>
 
-              <!-- ROLE -->
+              <!-- ROLE (ONLY staff or admin allowed display) -->
               <td>
                 <span class="status-badge">
-                  <%= member.role || 'staff' %>
+                  <%= member.role === 'admin' ? 'admin' : 'staff' %>
                 </span>
               </td>
 
-              <!-- STATUS (FIXED SAFE CHECK) -->
+              <!-- STATUS (STRICT FIX) -->
               <td>
                 <% const status = (member.status || 'active').toLowerCase(); %>
 

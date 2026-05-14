@@ -62,9 +62,8 @@
       <div>
         <label>Role</label>
         <select name="role" style="width:100%; padding:10px;">
-          <option value="staff">Staff</option>
-          <option value="cashier">Cashier</option>
-          <option value="barista">Barista</option>
+          <option value="staff" <%= staff?.role === 'staff' ? 'selected' : '' %>>Staff</option>
+          <option value="admin" <%= staff?.role === 'admin' ? 'selected' : '' %>>Admin</option>
         </select>
       </div>
 
@@ -72,8 +71,8 @@
       <div>
         <label>Status</label>
         <select name="status" style="width:100%; padding:10px;">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="active" <%= staff?.status === 'active' ? 'selected' : '' %>>Active</option>
+          <option value="inactive" <%= staff?.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
         </select>
       </div>
 

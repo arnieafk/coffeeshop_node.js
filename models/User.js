@@ -1,4 +1,4 @@
-const db = require('../config/db'); // IMPORTANT: correct path
+const db = require('../config/db'); // IMPORTANT: correct path 
 
 const User = {
 
@@ -10,11 +10,20 @@ const User = {
     return rows[0];
   },
 
-  create: async ({ name, email, password, role = 'customer', status = 'active' }) => {
+  create: async ({ name, email, password, role = 'staff', status = 'active' }) => {
+
+    // ✅ ONLY admin or staff allowed
+    const allowedRoles = ['admin', 'staff'];
+
+    const safeRole = allowedRoles.includes(role)
+      ? role
+      : 'staff';
+
     const [result] = await db.query(
       'INSERT INTO users (name, role, email, password, status) VALUES (?, ?, ?, ?, ?)',
-      [name, role, email, password, status]
+      [name, safeRole, email, password, status]
     );
+
     return result.insertId;
   },
 
@@ -29,7 +38,7 @@ const User = {
   getAllStaff: async () => {
     const [rows] = await db.query(
       `SELECT * FROM users
-       WHERE role IN ('staff', 'barista', 'cashier')
+       WHERE role IN ('staff', 'admin')
        ORDER BY id DESC`
     );
 
@@ -37,6 +46,7 @@ const User = {
   },
 
   update: async (id, data) => {
+
     const {
       name,
       email,
@@ -44,11 +54,18 @@ const User = {
       status = 'active'
     } = data;
 
+    // ✅ ONLY admin or staff allowed
+    const allowedRoles = ['admin', 'staff'];
+
+    const safeRole = allowedRoles.includes(role)
+      ? role
+      : 'staff';
+
     await db.query(
       `UPDATE users
        SET name = ?, email = ?, role = ?, status = ?
        WHERE id = ?`,
-      [name, email, role, status, id]
+      [name, email, safeRole, status, id]
     );
   },
 
