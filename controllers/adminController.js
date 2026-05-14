@@ -15,6 +15,52 @@ function setError(req, message) {
   req.session.error = message;
 }
 
+/* =====================================================
+   🔥 DASHBOARD FIX (ADDED ONLY - DO NOT REMOVE ANYTHING)
+===================================================== */
+
+async function getDashboardTotals() {
+  try {
+    const orders = await Order.getAllWithUser();
+    const products = await Product.getAll();
+    const customers = await User.getAllStaff(); // fallback since no customer query
+
+    let revenue = 0;
+
+    orders.forEach(o => {
+      revenue += Number(o.total || 0);
+    });
+
+    return {
+      revenue,
+      orders: orders.length,
+      products: products.length,
+      customers: customers.length
+    };
+
+  } catch (err) {
+    console.error('[DASHBOARD TOTALS ERROR]', err);
+
+    return {
+      revenue: 0,
+      orders: 0,
+      products: 0,
+      customers: 0
+    };
+  }
+}
+
+async function getRecentOrders() {
+  try {
+    const orders = await Order.getAllWithUser();
+
+    return (orders || []).slice(0, 5); // latest 5 orders
+  } catch (err) {
+    console.error('[RECENT ORDERS ERROR]', err);
+    return [];
+  }
+}
+
 /* =========================
    PRODUCTS
 ========================= */
@@ -115,7 +161,6 @@ async function deleteProduct(req, res) {
 
 async function listOrders(req, res) {
   try {
-
     const orders = await Order.getAllWithUser();
     const staffList = await User.getAllStaff();
 
@@ -135,7 +180,6 @@ async function listOrders(req, res) {
 
 async function showOrder(req, res) {
   try {
-
     const order = await Order.getById(req.params.id);
 
     if (!order) {
@@ -157,15 +201,13 @@ async function showOrder(req, res) {
 }
 
 /* =========================
-   ASSIGN ORDER TO STAFF (FIXED)
+   ASSIGN ORDER TO STAFF
 ========================= */
 
 async function assignOrderStaff(req, res) {
   try {
-
     let { staff_id } = req.body;
 
-    // 🔥 FIX: prevent empty string / invalid value
     staff_id = staff_id ? Number(staff_id) : null;
 
     if (staff_id === 0 || Number.isNaN(staff_id)) {
@@ -210,7 +252,6 @@ async function listPayments(req, res) {
 
 async function updateOrderStatus(req, res) {
   try {
-
     const map = {
       pending: 'Pending',
       preparing: 'Preparing',
@@ -262,7 +303,6 @@ function showCreateStaff(req, res) {
 
 async function createStaff(req, res) {
   try {
-
     const { name, email, password, role, status } = req.body;
 
     const existing = await User.findByEmail(email);
@@ -317,7 +357,6 @@ async function showEditStaff(req, res) {
 
 async function updateStaff(req, res) {
   try {
-
     const { name, email, role, status } = req.body;
 
     await User.update(req.params.id, {
@@ -339,7 +378,6 @@ async function updateStaff(req, res) {
 
 async function deleteStaff(req, res) {
   try {
-
     await User.remove(req.params.id);
 
     setSuccess(req, 'Staff deleted successfully');
@@ -376,5 +414,9 @@ module.exports = {
   createStaff,
   showEditStaff,
   updateStaff,
-  deleteStaff
+  deleteStaff,
+
+  // 🔥 ADDED FOR DASHBOARD
+  getDashboardTotals,
+  getRecentOrders
 };
