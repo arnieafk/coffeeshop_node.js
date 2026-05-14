@@ -3,11 +3,12 @@ const Order = require('../models/Order');
 /* ======================
    GET DASHBOARD STATS
 ====================== */
-async function getStats() {
+async function getStats(staffId) {
 
   try {
 
-    const orders = await Order.getAllForStaff?.() || [];
+    // ✅ ONLY GET ASSIGNED ORDERS
+    const orders = await Order.getAllForStaff(staffId);
 
     const stats = {
       pending: 0,
@@ -51,11 +52,12 @@ async function getStats() {
 /* ======================
    GET DASHBOARD ORDERS
 ====================== */
-async function getOrders() {
+async function getOrders(staffId) {
 
   try {
 
-    return await Order.getAllForStaff?.() || [];
+    // ✅ ONLY GET ASSIGNED ORDERS
+    return await Order.getAllForStaff(staffId);
 
   } catch (error) {
 
@@ -72,8 +74,10 @@ async function dashboard(req, res) {
 
   try {
 
-    const stats = await getStats();
-    const orders = await getOrders();
+    const staffId = req.session.user.id;
+
+    const stats = await getStats(staffId);
+    const orders = await getOrders(staffId);
 
     res.render('dashboard/staff', {
       user: req.session.user,
@@ -105,7 +109,10 @@ async function listOrders(req, res) {
 
   try {
 
-    const orders = await Order.getAllForStaff?.() || [];
+    const staffId = req.session.user.id;
+
+    // ✅ ONLY SHOW ASSIGNED ORDERS
+    const orders = await Order.getAllForStaff(staffId);
 
     res.render('staff/orders', {
       orders,

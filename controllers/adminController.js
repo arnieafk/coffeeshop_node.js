@@ -47,8 +47,10 @@ function showCreateProduct(req, res) {
 async function createProduct(req, res) {
   try {
     await Product.create(req.body);
+
     setSuccess(req, 'Product created successfully');
     return res.redirect('/admin/products');
+
   } catch (error) {
     console.error('[CREATE PRODUCT ERROR]', error);
     setError(req, 'Error creating product');
@@ -82,8 +84,10 @@ async function showEditProduct(req, res) {
 async function updateProduct(req, res) {
   try {
     await Product.update(req.params.id, req.body);
+
     setSuccess(req, 'Product updated successfully');
     return res.redirect('/admin/products');
+
   } catch (error) {
     console.error('[UPDATE PRODUCT ERROR]', error);
     setError(req, 'Error updating product');
@@ -94,8 +98,10 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
   try {
     await Product.remove(req.params.id);
+
     setSuccess(req, 'Product deleted successfully');
     return res.redirect('/admin/products');
+
   } catch (error) {
     console.error('[DELETE PRODUCT ERROR]', error);
     setError(req, 'Error deleting product');
@@ -109,22 +115,27 @@ async function deleteProduct(req, res) {
 
 async function listOrders(req, res) {
   try {
+
     const orders = await Order.getAllWithUser();
+    const staffList = await User.getAllStaff();
 
     return res.render('admin/orders', {
       orders,
+      staffList,
       user: req.session.user
     });
 
   } catch (error) {
     console.error('[ORDER LIST ERROR]', error);
     setError(req, 'Failed to load orders');
+
     return res.redirect('/admin/orders');
   }
 }
 
 async function showOrder(req, res) {
   try {
+
     const order = await Order.getById(req.params.id);
 
     if (!order) {
@@ -141,6 +152,34 @@ async function showOrder(req, res) {
   } catch (error) {
     console.error('[ORDER DETAILS ERROR]', error);
     setError(req, 'Error loading order');
+    return res.redirect('/admin/orders');
+  }
+}
+
+/* =========================
+   ASSIGN ORDER TO STAFF (FIXED)
+========================= */
+
+async function assignOrderStaff(req, res) {
+  try {
+
+    let { staff_id } = req.body;
+
+    // 🔥 FIX: prevent empty string / invalid value
+    staff_id = staff_id ? Number(staff_id) : null;
+
+    if (staff_id === 0 || Number.isNaN(staff_id)) {
+      staff_id = null;
+    }
+
+    await Order.assignStaff(req.params.id, staff_id);
+
+    setSuccess(req, 'Order assigned successfully');
+    return res.redirect('/admin/orders');
+
+  } catch (error) {
+    console.error('[ASSIGN STAFF ERROR]', error);
+    setError(req, 'Error assigning staff');
     return res.redirect('/admin/orders');
   }
 }
@@ -171,6 +210,7 @@ async function listPayments(req, res) {
 
 async function updateOrderStatus(req, res) {
   try {
+
     const map = {
       pending: 'Pending',
       preparing: 'Preparing',
@@ -192,7 +232,7 @@ async function updateOrderStatus(req, res) {
 }
 
 /* =========================
-   STAFF MANAGEMENT (FIXED STATUS HANDLING)
+   STAFF MANAGEMENT
 ========================= */
 
 async function listStaff(req, res) {
@@ -222,9 +262,11 @@ function showCreateStaff(req, res) {
 
 async function createStaff(req, res) {
   try {
+
     const { name, email, password, role, status } = req.body;
 
     const existing = await User.findByEmail(email);
+
     if (existing) {
       setError(req, 'Email already exists');
       return res.redirect('/admin/staff');
@@ -237,7 +279,7 @@ async function createStaff(req, res) {
       email,
       password: hashedPassword,
       role: role || 'staff',
-      status: status ? status : 'active'
+      status: status || 'active'
     });
 
     setSuccess(req, 'Staff created successfully');
@@ -275,13 +317,14 @@ async function showEditStaff(req, res) {
 
 async function updateStaff(req, res) {
   try {
+
     const { name, email, role, status } = req.body;
 
     await User.update(req.params.id, {
       name,
       email,
       role: role || 'staff',
-      status: status ? status : 'active'
+      status: status || 'active'
     });
 
     setSuccess(req, 'Staff updated successfully');
@@ -296,6 +339,7 @@ async function updateStaff(req, res) {
 
 async function deleteStaff(req, res) {
   try {
+
     await User.remove(req.params.id);
 
     setSuccess(req, 'Staff deleted successfully');
@@ -322,6 +366,7 @@ module.exports = {
 
   listOrders,
   showOrder,
+  assignOrderStaff,
 
   listPayments,
   updateOrderStatus,

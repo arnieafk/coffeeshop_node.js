@@ -7,9 +7,6 @@
 <link rel="stylesheet" href="/css/style.css">
 
 <style>
-
-/* ===== ADMIN ORDERS TABLE UPGRADE ===== */
-
 .table-container{
   background:white;
   border-radius:14px;
@@ -44,7 +41,6 @@
   background:#fafaf8;
 }
 
-/* STATUS BADGE ENHANCEMENT */
 .status-badge{
   padding:6px 12px;
   border-radius:20px;
@@ -53,30 +49,16 @@
   display:inline-block;
 }
 
-/* workflow colors */
-.status-pending{
-  background:rgba(241,196,15,0.15);
-  color:#7a5a0f;
-}
+.status-pending{ background:rgba(241,196,15,0.15); color:#7a5a0f; }
+.status-preparing{ background:rgba(52,152,219,0.15); color:#1b4f72; }
+.status-completed{ background:rgba(39,174,96,0.15); color:#196f3d; }
 
-.status-preparing{
-  background:rgba(52,152,219,0.15);
-  color:#1b4f72;
-}
-
-.status-completed{
-  background:rgba(39,174,96,0.15);
-  color:#196f3d;
-}
-
-/* BUTTON ALIGNMENT */
 .actions{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
   justify-content:center;
 }
-
 </style>
 
 </head>
@@ -84,7 +66,6 @@
 <body>
 
 <header class="top-header">
-
   <div class="user-info">
     <span>Admin Dashboard</span>
   </div>
@@ -97,165 +78,161 @@
 
     <a href="/logout" class="logout-btn">Logout</a>
   </div>
-
 </header>
 
 <div class="container">
 
 <nav class="sidebar">
-
   <h2>Admin Panel</h2>
-
-  <p class="menu-title">Main</p>
-
   <a href="/admin">Dashboard</a>
   <a href="/admin/products">Products</a>
   <a href="/admin/orders" class="active">Orders</a>
   <a href="/admin/payments">Payments</a>
   <a href="/admin/staff">Staff Management</a>
-
 </nav>
 
 <main class="main">
 
-  <div class="header">Orders Management</div>
+<div class="header">Orders Management</div>
 
-  <!-- QUICK ACTIONS -->
-  <div class="card">
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <a href="/admin/products" class="btn btn-secondary">Products</a>
-      <a href="/admin/payments" class="btn btn-secondary">Payments</a>
-      <a href="/admin" class="btn btn-secondary">Dashboard</a>
-      <a href="/admin/staff" class="btn btn-secondary">Staff Management</a>
-    </div>
-  </div>
+<% if (orders && orders.length > 0) { %>
 
-  <!-- TABLE -->
-  <% if (orders && orders.length > 0) { %>
+<div class="table-container">
 
-    <div class="table-container">
+<table class="table">
 
-      <table class="table">
+<thead>
+<tr>
+  <th>Order</th>
+  <th>Customer</th>
+  <th>Email</th>
+  <th>Assigned Staff</th>
+  <th>Status</th>
+  <th>Total</th>
+  <th>Date</th>
+  <th>Actions</th>
+</tr>
+</thead>
 
-        <thead>
-          <tr>
-            <th>Order</th>
-            <th>Customer</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Total</th>
-            <th>Date</th>
-            <th style="text-align:center;">Actions</th>
-          </tr>
-        </thead>
+<tbody>
 
-        <tbody>
+<% orders.forEach(order => { %>
 
-          <% orders.forEach(order => { %>
+<tr>
 
-            <tr>
+  <td>#<%= order.id %></td>
 
-              <!-- ORDER ID -->
-              <td style="font-weight:800;">
-                #<%= order.id %>
-              </td>
+  <td><%= order.customer_name || 'N/A' %></td>
 
-              <!-- CUSTOMER -->
-              <td style="font-weight:600;">
-                <%= order.customer_name %>
-              </td>
+  <td><%= order.customer_email || 'N/A' %></td>
 
-              <!-- EMAIL -->
-              <td style="opacity:0.8; font-size:0.9rem;">
-                <%= order.customer_email %>
-              </td>
+  <td>
+    <%= order.assigned_staff_name || 'Unassigned' %>
+  </td>
 
-              <!-- STATUS -->
-              <td>
-                <span class="status-badge status-<%= String(order.status).toLowerCase() %>">
-                  <%= order.status %>
-                </span>
-              </td>
+  <td>
+    <span class="status-badge status-<%= String(order.status || '').toLowerCase() %>">
+      <%= order.status %>
+    </span>
+  </td>
 
-              <!-- TOTAL -->
-              <td style="font-weight:800; color:var(--espresso-deep);">
-                ₱<%= Number(order.total || 0).toFixed(2) %>
-              </td>
+  <td>
+    ₱<%= Number(order.total || 0).toFixed(2) %>
+  </td>
 
-              <!-- DATE -->
-              <td style="font-size:0.9rem;">
-                <%= formatManilaDateTime(order.created_at) %>
-              </td>
+  <td>
+    <%= order.created_at %>
+  </td>
 
-              <!-- ACTIONS -->
-              <td>
+  <td>
 
-                <div class="actions">
+    <div class="actions">
 
-                  <a
-                    href="/admin/orders/<%= order.id %>"
-                    class="btn btn-small btn-info"
-                  >
-                    View
-                  </a>
+      <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">
+        View
+      </a>
 
-                  <% if (String(order.status).toLowerCase() === 'pending') { %>
+      <!-- ASSIGN STAFF -->
+      <form method="POST"
+            action="/admin/orders/<%= order.id %>/assign"
+            style="display:flex; gap:5px; align-items:center;">
 
-                    <form method="POST"
-                          action="/admin/orders/<%= order.id %>/status">
+        <select name="staff_id" required>
+          <option value="">Assign Staff</option>
 
-                      <input type="hidden" name="status" value="Preparing">
+          <% if (typeof staffList !== 'undefined') { %>
+            <% staffList.forEach(s => { %>
+              <option value="<%= s.id %>"
+                <%= order.assigned_staff_id == s.id ? 'selected' : '' %>>
+                <%= s.name %>
+              </option>
+            <% }) %>
+          <% } %>
 
-                      <button class="btn btn-small btn-success">
-                        Confirm
-                      </button>
+        </select>
 
-                    </form>
+        <button class="btn btn-small btn-primary">
+          Assign
+        </button>
 
-                  <% } else if (String(order.status).toLowerCase() === 'preparing') { %>
+      </form>
 
-                    <form method="POST"
-                          action="/admin/orders/<%= order.id %>/status">
+      <!-- STATUS -->
+      <% if (String(order.status || '').toLowerCase() === 'pending') { %>
 
-                      <input type="hidden" name="status" value="Completed">
+        <form method="POST"
+              action="/admin/orders/<%= order.id %>/status">
 
-                      <button class="btn btn-small btn-primary">
-                        Complete
-                      </button>
+          <input type="hidden" name="status" value="Preparing">
 
-                    </form>
+          <button class="btn btn-small btn-success">
+            Confirm
+          </button>
 
-                  <% } else { %>
+        </form>
 
-                    <button class="btn btn-small btn-secondary" disabled>
-                      Done
-                    </button>
+      <% } else if (String(order.status || '').toLowerCase() === 'preparing') { %>
 
-                  <% } %>
+        <form method="POST"
+              action="/admin/orders/<%= order.id %>/status">
 
-                </div>
+          <input type="hidden" name="status" value="Completed">
 
-              </td>
+          <button class="btn btn-small btn-primary">
+            Complete
+          </button>
 
-            </tr>
+        </form>
 
-          <% }) %>
+      <% } else { %>
 
-        </tbody>
+        <button class="btn btn-small btn-secondary" disabled>
+          Done
+        </button>
 
-      </table>
+      <% } %>
 
     </div>
 
-  <% } else { %>
+  </td>
 
-    <!-- EMPTY STATE -->
-    <div class="card" style="text-align:center; padding:40px;">
-      <h3>No Orders Found</h3>
-      <p style="opacity:0.7;">All orders have been processed.</p>
-    </div>
+</tr>
 
-  <% } %>
+<% }) %>
+
+</tbody>
+
+</table>
+
+</div>
+
+<% } else { %>
+
+<div class="card" style="text-align:center; padding:40px;">
+  <h3>No Orders Found</h3>
+</div>
+
+<% } %>
 
 </main>
 

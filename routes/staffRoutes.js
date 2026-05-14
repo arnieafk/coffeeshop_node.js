@@ -22,13 +22,16 @@ router.use(
 ====================== */
 router.get('/', async (req, res) => {
   try {
-    const stats = await staffController.getStats?.() || {
+
+    const staffId = req.session.user.id;
+
+    const stats = await staffController.getStats?.(staffId) || {
       pending: 0,
       preparing: 0,
       completed: 0
     };
 
-    const orders = await staffController.getOrders?.() || [];
+    const orders = await staffController.getOrders?.(staffId) || [];
 
     res.render('dashboard/staff', {
       user: req.session.user,
@@ -57,16 +60,13 @@ router.get('/orders', staffController.listOrders);
 ====================== */
 router.post('/orders/:id/status', staffController.updateOrderStatus);
 
-
 /* =====================================================
    🆕 ADMIN ACCESS TO VIEW STAFF PAGE (UML requirement)
-   NOTE: Admin can view staff list but NOT inside staff role middleware
 ===================================================== */
 
 router.get('/admin-view', async (req, res) => {
   try {
 
-    // you will replace this later with DB
     const staff = await staffController.getAllStaff?.() || [];
 
     res.render('admin/staff', {

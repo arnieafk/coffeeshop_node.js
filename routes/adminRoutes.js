@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express'); 
 const router = express.Router();
 
 const adminController = require('../controllers/adminController');
@@ -79,6 +79,14 @@ router.post('/products/:id/delete', adminController.deleteProduct);
 router.get('/orders', adminController.listOrders);
 router.get('/orders/:id', adminController.showOrder);
 router.post('/orders/:id/status', adminController.updateOrderStatus);
+
+/* =========================
+   ASSIGN ORDER TO STAFF
+========================= */
+router.post(
+  '/orders/:id/assign',
+  adminController.assignOrderStaff
+);
 
 /*
 |--------------------------------------------------------------------------

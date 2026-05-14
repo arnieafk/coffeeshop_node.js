@@ -43,26 +43,28 @@ async function getAllWithUser() {
 }
 
 /* =========================
-   STAFF: GET ORDERS (WITH ITEMS)
+   STAFF: GET ONLY ASSIGNED ORDERS
 ========================= */
-async function getAllForStaff() {
+async function getAllForStaff(staffId) {
+
   const [orders] = await db.query(`
     SELECT
       o.id,
       o.status,
       IFNULL(o.total, 0) AS total,
       o.created_at,
+      o.assigned_staff_id,
       u.name AS customer_name
     FROM orders o
     JOIN users u ON u.id = o.user_id
+    WHERE o.assigned_staff_id = ?
     ORDER BY o.id DESC
-  `);
+  `, [staffId]);
 
   if (!orders || orders.length === 0) return [];
 
   const orderIds = orders.map(o => o.id);
 
-  // SAFE GUARD
   if (orderIds.length === 0) return orders;
 
   const [items] = await db.query(`
@@ -138,7 +140,7 @@ async function getByUserId(userId) {
 }
 
 /* =========================
-   CREATE ORDER (FIXED STATUS CONSISTENCY)
+   CREATE ORDER
 ========================= */
 async function createOrder(userId, cartItems) {
   const createdAt = getManilaTimestamp();
@@ -154,9 +156,15 @@ async function createOrder(userId, cartItems) {
     }
 
     const [result] = await conn.query(`
-      INSERT INTO orders (user_id, status, total, created_at)
-      VALUES (?, ?, ?, ?)
-    `, [userId, 'Pending', total, createdAt]); // FIXED HERE
+      INSERT INTO orders (
+        user_id,
+        status,
+        total,
+        created_at,
+        assigned_staff_id
+      )
+      VALUES (?, ?, ?, ?, NULL)
+    `, [userId, 'Pending', total, createdAt]);
 
     const orderId = result.insertId;
 
@@ -196,6 +204,17 @@ async function updateStatus(orderId, status) {
 }
 
 /* =========================
+   ASSIGN STAFF TO ORDER (NEW FUNCTION)
+========================= */
+async function assignStaff(orderId, staffId) {
+  await db.query(`
+    UPDATE orders
+    SET assigned_staff_id = ?
+    WHERE id = ?
+  `, [staffId, orderId]);
+}
+
+/* =========================
    GET ORDER ITEMS
 ========================= */
 async function getOrderItems(orderId) {
@@ -219,5 +238,6 @@ module.exports = {
   getByUserId,
   createOrder,
   updateStatus,
-  getOrderItems
+  getOrderItems,
+  assignStaff   // ✅ NEW EXPORT
 };
