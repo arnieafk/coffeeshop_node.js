@@ -21,7 +21,6 @@
     </div>
 </header>
 
-
 <div class="container">
 
     <!-- Sidebar -->
@@ -34,8 +33,6 @@
         <a href="/admin/payments"> Payments</a>
     </nav>
 
-
-
     <!-- Main Content -->
     <main class="main">
 
@@ -43,57 +40,37 @@
             <%= title %>
         </div>
 
-
-        <!-- Quick Navigation -->
+        <!-- Navigation -->
         <div class="card">
             <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                <a href="/admin/products" class="btn btn-secondary">
-                     Back to Products
-                </a>
-
-                <a href="/admin/orders" class="btn btn-secondary">
-                     Orders
-                </a>
-
-                <a href="/admin/payments" class="btn btn-secondary">
-                     Payments
-                </a>
+                <a href="/admin/products" class="btn btn-secondary">Back to Products</a>
+                <a href="/admin/orders" class="btn btn-secondary">Orders</a>
+                <a href="/admin/payments" class="btn btn-secondary">Payments</a>
             </div>
         </div>
 
-
-
-        <!-- Product Form Card -->
+        <!-- Form -->
         <div class="card">
 
             <h2 style="margin-bottom:25px;">
-                <%= product ? ' Edit Product' : ' Add New Product' %>
+                <%= product ? 'Edit Product' : 'Add New Product' %>
             </h2>
 
             <form method="POST" action="<%= action %>">
 
-                <!-- Product Name -->
+                <!-- Name -->
                 <div style="margin-bottom:20px;">
                     <label style="font-weight:600; display:block; margin-bottom:8px;">
                         Product Name
                     </label>
 
-                    <input 
-                        type="text"
+                    <input type="text"
                         name="name"
                         value="<%= product ? product.name : '' %>"
                         required
                         placeholder="Enter product name"
-                        style="
-                        width:100%;
-                        padding:14px;
-                        border:1px solid #ddd;
-                        border-radius:10px;
-                        font-size:16px;
-                        ">
+                        style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
                 </div>
-
-
 
                 <!-- Price -->
                 <div style="margin-bottom:20px;">
@@ -101,22 +78,22 @@
                         Price
                     </label>
 
-                    <input 
-                        type="number"
-                        step="0.01"
-                        name="price"
-                        value="<%= product ? product.price : '' %>"
-                        required
-                        placeholder="Enter price"
-                        style="
-                        width:100%;
-                        padding:14px;
-                        border:1px solid #ddd;
-                        border-radius:10px;
-                        font-size:16px;
-                        ">
-                </div>
+                    <!-- ✅ FIX: show PHP hint + safe value -->
+                    <div style="position: relative;">
 
+                        <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:0.6;">
+                            ₱
+                        </span>
+
+                        <input type="number"
+                            step="0.01"
+                            name="price"
+                            value="<%= product ? Number(product.price || 0).toFixed(2) : '' %>"
+                            required
+                            placeholder="0.00"
+                            style="width:100%; padding:14px 14px 14px 30px; border:1px solid #ddd; border-radius:10px;">
+                    </div>
+                </div>
 
                 <!-- Stock -->
                 <div style="margin-bottom:20px;">
@@ -124,22 +101,14 @@
                         Stock
                     </label>
 
-                    <input
-                        type="number"
+                    <input type="number"
                         name="stock"
                         min="0"
                         value="<%= product ? product.stock : 0 %>"
                         required
                         placeholder="Enter stock quantity"
-                        style="
-                        width:100%;
-                        padding:14px;
-                        border:1px solid #ddd;
-                        border-radius:10px;
-                        font-size:16px;
-                        ">
+                        style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
                 </div>
-
 
                 <!-- Description -->
                 <div style="margin-bottom:30px;">
@@ -147,27 +116,17 @@
                         Description
                     </label>
 
-                    <textarea
-                        name="description"
+                    <textarea name="description"
                         rows="5"
                         required
                         placeholder="Enter product description"
-                        style="
-                        width:100%;
-                        padding:14px;
-                        border:1px solid #ddd;
-                        border-radius:10px;
-                        font-size:16px;
-                        resize:none;
-                        "><%= product ? product.description : '' %></textarea>
+                        style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; resize:none;"><%= product ? product.description : '' %></textarea>
                 </div>
-
-
 
                 <!-- Buttons -->
                 <div style="display:flex; gap:15px; flex-wrap:wrap;">
                     <button type="submit" class="btn btn-primary">
-                         Save Product
+                        Save Product
                     </button>
 
                     <a href="/admin/products" class="btn btn-secondary">
@@ -179,16 +138,15 @@
 
         </div>
 
-
-        <!-- Tips Card -->
+        <!-- Tips -->
         <div class="card">
-            <h3> Product Tips</h3>
+            <h3>Product Tips</h3>
 
             <ul style="line-height:1.8; padding-left:20px;">
-                <li>Use clear and unique product names</li>
-                <li>Set accurate pricing for menu consistency</li>
-                <li>Add short but appealing descriptions</li>
-                <li>Update products regularly for inventory tracking</li>
+                <li>Use clear product names</li>
+                <li>Keep pricing consistent in ₱</li>
+                <li>Add short descriptions</li>
+                <li>Update stock regularly</li>
             </ul>
         </div>
 

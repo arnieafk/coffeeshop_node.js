@@ -138,6 +138,22 @@ pool.initializeSchema = async () => {
     await connection.execute(createPaymentsTable);
     console.log('[DB] Payments table initialized.');
 
+    // Create staff table
+const createStaffTable = `
+  CREATE TABLE IF NOT EXISTS staff (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'staff',
+    status VARCHAR(20) DEFAULT 'active',
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+`;
+
+await connection.execute(createStaffTable);
+console.log('[DB] Staff table initialized.');
+
     // Seed products if empty
     const [countResult] = await connection.execute('SELECT COUNT(*) as count FROM products');
     const productCount = countResult[0].count;

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Management - Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<header class="top-header">
+
+  <div class="user-info">
+    <span>Coffee Shop System</span>
+  </div>
+
+  <div class="user-info">
+    <span>
+      Admin:
+      <strong><%= user.name %></strong>
+    </span>
+
+    <a class="logout-btn" href="/logout">Logout</a>
+  </div>
+
+</header>
+
+<div class="container">
+
+<nav class="sidebar">
+
+  <h2>ADMIN PANEL</h2>
+
+  <p class="menu-title">Main</p>
+
+  <a href="/admin">Dashboard</a>
+  <a href="/admin/products">Products</a>
+  <a href="/admin/orders">Orders</a>
+  <a href="/admin/payments">Payments</a>
+  <a href="/admin/staff" class="active">Staff Management</a>
+
+</nav>
+
+<main class="main">
+
+  <div class="header">Staff Management</div>
+
+  <div class="card">
+    <a href="/admin/staff/new" class="btn btn-primary">
+      + Add New Staff
+    </a>
+  </div>
+
+  <% if (staff && staff.length > 0) { %>
+
+    <div class="table-container">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <% staff.forEach(member => { %>
+
+            <tr>
+
+              <!-- ID -->
+              <td style="font-weight:700;">
+                #<%= member.id %>
+              </td>
+
+              <!-- NAME -->
+              <td style="font-weight:600;">
+                <%= member.name %>
+              </td>
+
+              <!-- ROLE -->
+              <td>
+                <span class="status-badge">
+                  <%= member.role || 'staff' %>
+                </span>
+              </td>
+
+              <!-- STATUS (FIXED SAFE CHECK) -->
+              <td>
+                <% const status = (member.status || 'active').toLowerCase(); %>
+
+                <% if (status === 'active') { %>
+                  <span style="color:green; font-weight:600;">Active</span>
+                <% } else { %>
+                  <span style="color:red; font-weight:600;">Inactive</span>
+                <% } %>
+              </td>
+
+              <!-- ACTIONS -->
+              <td>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+
+                  <a href="/admin/staff/<%= member.id %>/edit"
+                     class="btn btn-small btn-info">
+                    Edit
+                  </a>
+
+                  <form method="POST"
+                        action="/admin/staff/<%= member.id %>/delete"
+                        onsubmit="return confirm('Delete this staff member?')">
+
+                    <button class="btn btn-small btn-danger">
+                      Delete
+                    </button>
+
+                  </form>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          <% }) %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  <% } else { %>
+
+    <div class="card" style="text-align:center; padding:40px;">
+      <h3>No Staff Found</h3>
+      <p style="opacity:0.7;">
+        Start by adding your first staff member.
+      </p>
+
+      <a href="/admin/staff/new" class="btn btn-primary" style="margin-top:15px;">
+        Add Staff
+      </a>
+    </div>
+
+  <% } %>
+
+</main>
+
+</div>
+
+</body>
+</html>

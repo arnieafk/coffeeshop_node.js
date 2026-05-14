@@ -7,113 +7,334 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Top Header Bar -->
+
+  <!-- Top Header -->
   <header class="top-header">
+
     <div class="user-info">
-      <span> Coffee Shop</span>
+      <span>Coffee Shop</span>
     </div>
+
     <div class="user-info">
-      <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Customer' %></span>
-      <a href="/logout" class="logout-btn">Logout</a>
+
+      <span>
+        Welcome,
+        <%= typeof user !== 'undefined'
+          ? user.name
+          : 'Customer' %>
+      </span>
+
+      <a href="/logout" class="logout-btn">
+        Logout
+      </a>
+
     </div>
+
   </header>
 
   <div class="container">
-    <!-- Persistent Left Sidebar -->
+
+    <!-- Sidebar -->
     <nav class="sidebar">
-      <h2> Menu</h2>
-      <a href="/customer"> Dashboard</a>
-      <a href="/customer/menu"> Browse Menu</a>
-      <a href="/customer/cart"> Cart <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>(<%= cartCount %>)<% } %></a>
-      <a href="/customer/orders"> My Orders</a>
+
+      <h2>Customer Panel</h2>
+
+      <p class="menu-title">Main Navigation</p>
+
+      <a href="/customer">
+        Dashboard
+      </a>
+
+      <a href="/customer/menu">
+        Browse Menu
+      </a>
+
+      <a href="/customer/cart">
+
+        Cart
+
+        <% if (
+          typeof cart !== 'undefined' &&
+          cart.length > 0
+        ) { %>
+
+          (<%= cart.length %>)
+
+        <% } %>
+
+      </a>
+
+      <a href="/customer/orders" class="active">
+        My Orders
+      </a>
+
     </nav>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main">
-      <div class="header">My Orders</div>
 
-      <% if (typeof orders === 'undefined' || !orders.length) { %>
+      <div class="header">
+        My Orders
+      </div>
+
+      <% if (!orders || orders.length === 0) { %>
+
+        <!-- Empty State -->
         <div class="card" style="text-align: center;">
-          <div style="font-size: 4rem; margin-bottom: 20px;"></div>
-          <h3>No orders yet</h3>
-          <p>You haven't placed any orders. Start by browsing our delicious menu!</p>
-          <a href="/customer/menu" class="btn btn-primary" style="margin-top: 20px;">Browse Menu</a>
+
+          <h3>No Orders Yet</h3>
+
+          <p>
+            You have not placed any orders yet.
+          </p>
+
+          <a
+            href="/customer/menu"
+            class="btn btn-primary"
+            style="margin-top: 20px;"
+          >
+
+            Browse Menu
+
+          </a>
+
         </div>
+
       <% } else { %>
+
         <% orders.forEach(order => { %>
-          <div class="card" style="margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+
+          <!-- Order Card -->
+          <div class="card" style="margin-bottom: 25px;">
+
+            <!-- Order Header -->
+            <div style="
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              gap: 20px;
+              flex-wrap: wrap;
+              margin-bottom: 20px;
+            ">
+
               <div>
-                <h3 style="margin: 0;">Order #<%= order.id %></h3>
-                <p style="margin: 5px 0; color: var(--text-main); opacity: 0.8;">
-                  <%= formatManilaDateTime(order.created_at) %>
+
+                <h3 style="
+                  margin: 0;
+                  color: var(--espresso-deep);
+                ">
+
+                  Order #<%= order.id %>
+
+                </h3>
+
+                <p style="
+                  margin-top: 8px;
+                  opacity: 0.75;
+                  font-size: 0.95rem;
+                ">
+
+                  <%= order.created_at
+                    ? new Date(order.created_at)
+                        .toLocaleString()
+                    : 'N/A'
+                  %>
+
                 </p>
+
               </div>
+
               <div style="text-align: right;">
-                <div style="font-size: 1.3rem; font-weight: 700; color: var(--espresso-deep); margin-bottom: 8px;">
-                  $<%= Number(order.total).toFixed(2) %>
+
+                <div style="
+                  font-size: 1.4rem;
+                  font-weight: 800;
+                  color: var(--espresso-deep);
+                  margin-bottom: 8px;
+                ">
+
+                  ₱<%= Number(order.total || 0).toFixed(2) %>
+
                 </div>
-                <span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span>
+
+                <span class="
+                  status-badge
+                  status-<%= (order.status || 'pending').toLowerCase() %>
+                ">
+
+                  <%= order.status || 'Pending' %>
+
+                </span>
+
               </div>
+
             </div>
 
             <!-- Order Items -->
-            <div style="margin-bottom: 20px;">
-              <h4 style="margin-bottom: 15px; color: var(--espresso-deep);">Order Items:</h4>
-              <% order.items.forEach(item => { %>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                  <div style="display: flex; align-items: center; gap: 15px;">
-                    <div style="width: 50px; height: 50px; background: var(--latte-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                      <%= item.image || '' %>
+            <div>
+
+              <h4 style="
+                margin-bottom: 15px;
+                color: var(--espresso-deep);
+              ">
+
+                Order Items
+
+              </h4>
+
+              <% if (
+                order.items &&
+                order.items.length > 0
+              ) { %>
+
+                <% order.items.forEach(item => { %>
+
+                  <div style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 15px;
+                    padding: 14px 0;
+                    border-bottom: 1px solid rgba(0,0,0,0.08);
+                    flex-wrap: wrap;
+                  ">
+
+                    <!-- Left -->
+                    <div style="
+                      display: flex;
+                      align-items: center;
+                      gap: 15px;
+                    ">
+
+                      <div style="
+                        width: 55px;
+                        height: 55px;
+                        background: rgba(215,184,153,0.15);
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        overflow: hidden;
+                      ">
+
+                        <% if (item.image) { %>
+
+                          <img
+                            src="<%= item.image %>"
+                            alt="<%= item.name %>"
+                            style="
+                              width: 100%;
+                              height: 100%;
+                              object-fit: cover;
+                            "
+                          >
+
+                        <% } else { %>
+
+                          <span style="
+                            font-size: 0.8rem;
+                            color: #777;
+                          ">
+                            Item
+                          </span>
+
+                        <% } %>
+
+                      </div>
+
+                      <div>
+
+                        <div style="
+                          font-weight: 700;
+                          color: var(--espresso-deep);
+                        ">
+
+                          <%= item.name %>
+
+                        </div>
+
+                        <div style="
+                          font-size: 0.9rem;
+                          opacity: 0.7;
+                        ">
+
+                          Quantity:
+                          <%= item.quantity %>
+
+                        </div>
+
+                      </div>
+
                     </div>
-                    <div>
-                      <div style="font-weight: 600; color: var(--espresso-deep);"><%= item.name %></div>
-                      <div style="font-size: 0.9rem; color: var(--text-main); opacity: 0.8;">Quantity: <%= item.quantity %></div>
+
+                    <!-- Right -->
+                    <div style="
+                      font-weight: 700;
+                      color: var(--espresso-deep);
+                    ">
+
+                      ₱<%= (
+                        Number(item.price) *
+                        Number(item.quantity)
+                      ).toFixed(2) %>
+
                     </div>
+
                   </div>
-                  <div style="font-weight: 600; color: var(--espresso-deep);">
-                    $<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %>
-                  </div>
-                </div>
-              <% }); %>
+
+                <% }); %>
+
+              <% } else { %>
+
+                <p style="opacity: 0.7;">
+                  No order items found.
+                </p>
+
+              <% } %>
+
             </div>
 
-            <!-- Order Status Timeline -->
-            <div style="background: rgba(215, 184, 153, 0.1); padding: 15px; border-radius: 8px;">
-              <h4 style="margin: 0 0 10px 0; color: var(--espresso-deep);">Order Status</h4>
-              <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                <%
-                  const pendingColor = (order.status === 'pending' || order.status === 'preparing' || order.status === 'completed') ? '#28a745' : '#6c757d';
-                  const preparingColor = (order.status === 'preparing' || order.status === 'completed') ? '#28a745' : '#6c757d';
-                  const completedColor = order.status === 'completed' ? '#28a745' : '#6c757d';
-                %>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%;" data-color="<%= pendingColor %>"></div>
-                  <span style="font-size: 0.9rem;">Order Placed</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%;" data-color="<%= preparingColor %>"></div>
-                  <span style="font-size: 0.9rem;">Preparing</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%;" data-color="<%= completedColor %>"></div>
-                  <span style="font-size: 0.9rem;">Ready for Pickup</span>
-                </div>
+            <!-- Footer -->
+            <div style="
+              margin-top: 20px;
+              padding-top: 15px;
+              border-top: 1px solid rgba(0,0,0,0.08);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 15px;
+            ">
+
+              <div style="
+                font-size: 0.95rem;
+                opacity: 0.75;
+              ">
+
+                Thank you for ordering with us.
+
               </div>
+
+              <a
+                href="/customer/menu"
+                class="btn btn-secondary"
+              >
+
+                Order Again
+
+              </a>
+
             </div>
+
           </div>
+
         <% }); %>
 
-        <div style="text-align: center; margin-top: 30px;">
-          <a href="/customer/menu" class="btn btn-secondary">Order More Items</a>
-        </div>
       <% } %>
+
     </main>
+
   </div>
-  <script>
-    document.querySelectorAll('[data-color]').forEach(el => {
-      el.style.backgroundColor = el.getAttribute('data-color');
-    });
-  </script>
+
 </body>
 </html>

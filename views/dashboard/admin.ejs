@@ -5,19 +5,74 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard - Coffee Shop</title>
 <link rel="stylesheet" href="/css/style.css">
+
+<style>
+
+/* ===== DASHBOARD POLISH ONLY ===== */
+
+.metrics-grid{
+  margin-top:20px;
+}
+
+.metric-card{
+  position:relative;
+  overflow:hidden;
+}
+
+/* subtle glow effect */
+.metric-card::after{
+  content:"";
+  position:absolute;
+  width:120px;
+  height:120px;
+  background:rgba(215,184,153,0.2);
+  top:-40px;
+  right:-40px;
+  border-radius:50%;
+}
+
+/* VALUE EMPHASIS */
+.metric-card .value{
+  font-size:2.1rem;
+  font-weight:900;
+  letter-spacing:-0.5px;
+}
+
+/* LABEL TONE */
+.metric-card .label{
+  opacity:0.75;
+}
+
+/* TABLE HEADER FIX */
+.table thead th{
+  font-size:0.8rem;
+}
+
+/* CARD HEADER */
+.card h3{
+  font-size:1.1rem;
+  margin-bottom:15px;
+  color:var(--espresso-deep);
+}
+
+</style>
+
 </head>
 
 <body>
 
 <header class="top-header">
 
-  <div> Coffee Shop System</div>
-
-  <!--  ADD MOBILE TOGGLE BUTTON -->
-  <button class="menu-toggle" onclick="toggleSidebar()"></button>
+  <div class="user-info">
+    <span>Coffee Shop System</span>
+  </div>
 
   <div class="user-info">
-     Admin: <strong><%= user.name %></strong>
+    <span>
+      Admin:
+      <strong><%= user.name %></strong>
+    </span>
+
     <a class="logout-btn" href="/logout">Logout</a>
   </div>
 
@@ -25,80 +80,109 @@
 
 <div class="container">
 
-<!-- SIDEBAR (ONLY ADD ID - NO STRUCTURE CHANGE) -->
-<nav class="sidebar" id="sidebar">
+<nav class="sidebar">
 
-  <h2> ADMIN PANEL</h2>
+  <h2>ADMIN PANEL</h2>
 
-  <p class="menu-title">MAIN</p>
-  <a href="/admin"> Dashboard</a>
-  <a href="/admin/products"> Products</a>
-  <a href="/admin/orders"> Orders</a>
-  <a href="/admin/payments"> Payments</a>
+  <p class="menu-title">Main</p>
+
+  <a href="/admin" class="active">Dashboard</a>
+  <a href="/admin/products">Products</a>
+  <a href="/admin/orders">Orders</a>
+  <a href="/admin/payments">Payments</a>
+
+  <!-- ✅ ADDED (based on UML: Admin manages Staff) -->
+  <a href="/admin/staff">Staff Management</a>
 
 </nav>
 
-<!-- MAIN -->
 <main class="main">
 
-  <div class="header"> Dashboard</div>
+  <div class="header">Dashboard Overview</div>
 
+  <!-- METRICS -->
   <div class="metrics-grid">
 
     <div class="metric-card">
-      <div class="icon"></div>
-      <div class="value">$<%= totals?.revenue || '0.00' %></div>
+      <div class="value">
+        ₱<%= Number(totals?.revenue || 0).toFixed(2) %>
+      </div>
       <div class="label">Total Revenue</div>
     </div>
 
     <div class="metric-card">
-      <div class="icon"></div>
       <div class="value"><%= totals?.orders || 0 %></div>
       <div class="label">Total Orders</div>
     </div>
 
     <div class="metric-card">
-      <div class="icon"></div>
       <div class="value"><%= totals?.products || 0 %></div>
       <div class="label">Products</div>
     </div>
 
     <div class="metric-card">
-      <div class="icon"></div>
       <div class="value"><%= totals?.customers || 0 %></div>
       <div class="label">Customers</div>
     </div>
 
   </div>
 
+  <!-- RECENT ORDERS -->
   <div class="card">
+
     <h3>Recent Orders</h3>
 
-    <% if (recentOrders?.length) { %>
-    <table class="table">
-      <tr>
-        <th>ID</th>
-        <th>Customer</th>
-        <th>Status</th>
-        <th>Total</th>
-      </tr>
+    <% if (recentOrders && recentOrders.length > 0) { %>
 
-      <% recentOrders.forEach(o => { %>
-      <tr>
-        <td>#<%= o.id %></td>
-        <td><%= o.customer_name %></td>
-        <td>
-          <span class="status-badge status-<%= o.status %>">
-            <%= o.status %>
-          </span>
-        </td>
-        <td>$<%= o.total %></td>
-      </tr>
-      <% }) %>
+      <div class="table-container">
 
-    </table>
+        <table class="table">
+
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <% recentOrders.forEach(o => { %>
+
+              <tr>
+
+                <td style="font-weight:800;">#<%= o.id %></td>
+
+                <td style="font-weight:600;">
+                  <%= o.customer_name %>
+                </td>
+
+                <td>
+                  <span class="status-badge status-<%= String(o.status).toLowerCase() %>">
+                    <%= o.status %>
+                  </span>
+                </td>
+
+                <td style="font-weight:800; color:var(--espresso-deep);">
+                  ₱<%= Number(o.total || 0).toFixed(2) %>
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
     <% } else { %>
-      <p>No orders yet</p>
+
+      <p style="opacity:0.7;">No recent orders yet.</p>
+
     <% } %>
 
   </div>
@@ -106,9 +190,6 @@
 </main>
 
 </div>
-
-<!--  ADD TOGGLE SCRIPT ONLY -->
-<script src="/js/script.js"></script>
 
 </body>
 </html>

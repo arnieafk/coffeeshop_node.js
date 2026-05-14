@@ -19,13 +19,14 @@ router.use(
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard (FIXED)
+| Dashboard
 |--------------------------------------------------------------------------
 */
 router.get('/', async (req, res) => {
   try {
-    // SAFE DEFAULTS (prevents "totals is not defined")
-    const totals = await adminController.getDashboardTotals?.() || {
+    const totals = await adminController.getDashboardTotals?.();
+
+    const safeTotals = totals || {
       revenue: 0,
       orders: 0,
       products: 0,
@@ -34,15 +35,18 @@ router.get('/', async (req, res) => {
 
     const recentOrders = await adminController.getRecentOrders?.() || [];
 
-    res.render('dashboard/admin', {
+    return res.render('dashboard/admin', {
+      title: 'Admin Dashboard',
       user: req.session.user,
-      totals,
+      totals: safeTotals,
       recentOrders
     });
 
   } catch (err) {
-    console.error(err);
-    res.render('dashboard/admin', {
+    console.error('[ADMIN DASHBOARD ERROR]', err);
+
+    return res.render('dashboard/admin', {
+      title: 'Admin Dashboard',
       user: req.session.user,
       totals: {
         revenue: 0,
@@ -74,6 +78,7 @@ router.post('/products/:id/delete', adminController.deleteProduct);
 */
 router.get('/orders', adminController.listOrders);
 router.get('/orders/:id', adminController.showOrder);
+router.post('/orders/:id/status', adminController.updateOrderStatus);
 
 /*
 |--------------------------------------------------------------------------
@@ -82,6 +87,28 @@ router.get('/orders/:id', adminController.showOrder);
 */
 router.get('/payments', adminController.listPayments);
 
-router.post('/orders/:id/status', adminController.updateOrderStatus);
+/*
+|--------------------------------------------------------------------------
+| STAFF MANAGEMENT (FULL CRUD)
+|--------------------------------------------------------------------------
+*/
+
+// VIEW STAFF
+router.get('/staff', adminController.listStaff);
+
+// SHOW ADD STAFF FORM
+router.get('/staff/new', adminController.showCreateStaff);
+
+// CREATE STAFF
+router.post('/staff', adminController.createStaff);
+
+// SHOW EDIT STAFF FORM
+router.get('/staff/:id/edit', adminController.showEditStaff);
+
+// UPDATE STAFF
+router.post('/staff/:id/update', adminController.updateStaff);
+
+// DELETE STAFF
+router.post('/staff/:id/delete', adminController.deleteStaff);
 
 module.exports = router;

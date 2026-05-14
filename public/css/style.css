@@ -394,3 +394,167 @@ body {
     justify-content: space-between;
   }
 }
+
+/* =========================
+   CART UI ADD-ONS (APPEND ONLY)
+   DO NOT MODIFY EXISTING CODE ABOVE
+========================= */
+
+/* Cart Item Layout */
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 15px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item-image {
+  width: 50px;
+  height: 50px;
+  background: #f1f1f1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.cart-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-item-name {
+  font-weight: 700;
+  color: var(--espresso-deep);
+}
+
+.cart-item-price {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Quantity Controls */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f8f8;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.quantity-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--espresso-deep);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.quantity-btn:hover {
+  background: var(--espresso-mute);
+}
+
+.quantity-display {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Cart Total Section */
+.cart-total {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--white-glass);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.total-amount {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--espresso-deep);
+}
+
+/* Small mobile improvement */
+@media (max-width: 768px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quantity-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.sidebar a.active {
+  background: #d7b899;
+  color: #1e1814;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* =========================
+   TOAST IMPROVEMENT (FINAL POLISH)
+========================= */
+
+.toast {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  min-width: 260px;
+  max-width: 350px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  animation: toastIn 0.3s ease, toastOut 0.5s ease 2.5s forwards;
+}
+
+/* SUCCESS */
+.toast.success {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+/* ERROR */
+.toast.error {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+/* ANIMATIONS */
+@keyframes toastIn {
+  from {
+    transform: translateX(120px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastOut {
+  to {
+    transform: translateX(120px);
+    opacity: 0;
+  }
+}

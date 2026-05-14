@@ -3,73 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title><%= title || "Coffee Shop System" %></title>
+
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
 
-<!-- TOP HEADER -->
 <header class="top-header">
 
   <div class="left-header">
-     Coffee Shop System
+    ☕ Coffee Shop System
   </div>
 
-  <!-- HAMBURGER BUTTON (MOBILE) -->
-  <button class="menu-toggle" onclick="toggleSidebar()"></button>
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 
   <div class="right-header">
+
     <% if (currentUser) { %>
       <span>
-        Welcome, <%= currentUser.name %> (<%= currentUser.role %>)
+        Welcome, <%= currentUser.name %>
+        (<%= currentUser.role %>)
       </span>
 
       <a href="/logout" class="logout-btn">Logout</a>
+
+    <% } else { %>
+      <a href="/login" class="logout-btn">Login</a>
     <% } %>
+
   </div>
 
 </header>
 
 <div class="container">
 
-  <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
 
-    <h2> <%= currentUser.role.toUpperCase() %> PANEL</h2>
+    <h2>
+      <%= currentUser?.role ? currentUser.role.toUpperCase() + " PANEL" : "PANEL" %>
+    </h2>
 
-    <% if (currentUser.role === 'admin') { %>
+    <% if (currentUser && currentUser.role === 'admin') { %>
+
       <p class="menu-title">MAIN</p>
-      <a href="/admin"> Dashboard</a>
-      <a href="/admin/products"> Products</a>
-      <a href="/admin/orders"> Orders</a>
-      <a href="/admin/payments"> Payments</a>
+
+      <a href="/admin/products"
+         class="<%= currentPath.startsWith('/admin/products') ? 'active' : '' %>">
+        Products
+      </a>
+
+      <a href="/admin/orders"
+         class="<%= currentPath.startsWith('/admin/orders') ? 'active' : '' %>">
+        Orders
+      </a>
+
+      <a href="/admin/payments"
+         class="<%= currentPath.startsWith('/admin/payments') ? 'active' : '' %>">
+        Payments
+      </a>
+
     <% } %>
 
-    <% if (currentUser.role === 'staff') { %>
+    <% if (currentUser && currentUser.role === 'staff') { %>
+
       <p class="menu-title">MAIN</p>
-      <a href="/staff"> Dashboard</a>
-      <a href="/staff/orders"> Orders</a>
+
+      <a href="/staff"
+         class="<%= currentPath === '/staff' ? 'active' : '' %>">
+        Dashboard
+      </a>
+
+      <a href="/staff/orders"
+         class="<%= currentPath.startsWith('/staff/orders') ? 'active' : '' %>">
+        Orders
+      </a>
+
     <% } %>
 
-    <% if (currentUser.role === 'customer') { %>
+    <% if (currentUser && currentUser.role === 'customer') { %>
+
       <p class="menu-title">MAIN</p>
-      <a href="/customer"> Dashboard</a>
-      <a href="/customer/menu"> Menu</a>
-      <a href="/customer/cart"> Cart</a>
-      <a href="/customer/orders"> Orders</a>
+
+      <a href="/customer"
+         class="<%= currentPath === '/customer' ? 'active' : '' %>">
+        Dashboard
+      </a>
+
+      <a href="/customer/menu"
+         class="<%= currentPath.startsWith('/customer/menu') ? 'active' : '' %>">
+        Menu
+      </a>
+
+      <a href="/customer/cart"
+         class="<%= currentPath.startsWith('/customer/cart') ? 'active' : '' %>">
+        Cart
+      </a>
+
+      <a href="/customer/orders"
+         class="<%= currentPath.startsWith('/customer/orders') ? 'active' : '' %>">
+        Orders
+      </a>
+
     <% } %>
 
   </nav>
 
-  <!-- MAIN CONTENT -->
   <main class="main" id="mainContent">
+
+    <!-- SUCCESS POPUP -->
+    <% if (success) { %>
+      <div class="toast success" id="toast-success">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <!-- ERROR POPUP -->
+    <% if (error) { %>
+      <div class="toast error" id="toast-error">
+        <%= error %>
+      </div>
+    <% } %>
+
     <%- body %>
+
   </main>
 
 </div>
 
-<!-- JS -->
 <script src="/js/script.js"></script>
 
 </body>

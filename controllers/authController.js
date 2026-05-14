@@ -80,8 +80,11 @@ async function login(req, res) {
     };
 
     req.session.save(() => {
+
       if (user.role === 'admin') return res.redirect('/admin');
+
       if (user.role === 'staff') return res.redirect('/staff');
+
       return res.redirect('/customer');
     });
 

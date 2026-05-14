@@ -7,7 +7,7 @@ async function getStats() {
 
   try {
 
-    const orders = await Order.getAllForStaff();
+    const orders = await Order.getAllForStaff?.() || [];
 
     const stats = {
       pending: 0,
@@ -17,7 +17,7 @@ async function getStats() {
 
     orders.forEach(order => {
 
-      const status = String(order.status).toLowerCase();
+      const status = String(order.status || '').toLowerCase();
 
       if (status === 'pending') {
         stats.pending++;
@@ -55,7 +55,7 @@ async function getOrders() {
 
   try {
 
-    return await Order.getAllForStaff();
+    return await Order.getAllForStaff?.() || [];
 
   } catch (error) {
 
@@ -105,7 +105,7 @@ async function listOrders(req, res) {
 
   try {
 
-    const orders = await Order.getAllForStaff();
+    const orders = await Order.getAllForStaff?.() || [];
 
     res.render('staff/orders', {
       orders,
@@ -129,7 +129,6 @@ async function updateOrderStatus(req, res) {
 
     let { status } = req.body;
 
-    /* STANDARDIZE STATUS */
     const map = {
       pending: 'Pending',
       preparing: 'Preparing',

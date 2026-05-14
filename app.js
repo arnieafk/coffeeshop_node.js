@@ -20,6 +20,9 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+/* ======================
+   MANILA TIME HELPERS
+====================== */
 const MANILA_TIME_ZONE = 'Asia/Manila';
 
 function normalizeToManilaDate(value) {
@@ -51,8 +54,8 @@ function formatManilaDateTime(value) {
   }).formatToParts(date);
 
   const output = {};
-  parts.forEach(({ type, value: partValue }) => {
-    if (type !== 'literal') output[type] = partValue;
+  parts.forEach(({ type, value }) => {
+    if (type !== 'literal') output[type] = value;
   });
 
   return `${output.month} ${output.day}, ${output.year} ${output.hour}:${output.minute} ${output.dayPeriod}`;
@@ -77,16 +80,34 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 2, // 2 hours session
+      maxAge: 1000 * 60 * 60 * 2,
     },
   })
 );
 
 /* ======================
-   GLOBAL USER ACCESS
+   GLOBAL USER + PATH
 ====================== */
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  next();
+});
+
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  next();
+});
+
+/* ======================
+   🔥 FLASH MESSAGE SYSTEM (NEW ADD ONLY)
+====================== */
+app.use((req, res, next) => {
+  res.locals.success = req.session.success || null;
+  res.locals.error = req.session.error || null;
+
+  delete req.session.success;
+  delete req.session.error;
+
   next();
 });
 
@@ -131,25 +152,17 @@ const PORT = Number(process.env.PORT) || 3000;
 
 async function startServer() {
   try {
-    console.log('DB host:', process.env.DB_HOST);
-    console.log('DB port:', process.env.DB_PORT);
-    console.log('App port:', PORT);
-
     await dns.lookup(process.env.DB_HOST);
     await db.testConnection();
-    console.log('Aiven MySQL connection successful.');
-
     await db.initializeSchema();
-    console.log('[DB] Schema initialization complete.');
 
+    console.log('Server running...');
     app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
+      console.log(`http://localhost:${PORT}`);
     });
+
   } catch (error) {
-    console.error('Unable to connect to Aiven MySQL.');
-    console.error('Host:', process.env.DB_HOST);
-    console.error('Port:', process.env.DB_PORT);
-    console.error('Error:', error.message);
+    console.error('DB ERROR:', error.message);
     process.exit(1);
   }
 }

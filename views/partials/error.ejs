@@ -5,62 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Error - Coffee Shop</title>
   <link rel="stylesheet" href="/css/style.css">
+
   <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1814, #2d241e);
+    }
+
     .error-container {
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #1e1814, #2d241e);
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
       padding: 20px;
     }
 
-    .error-content {
+    .error-box {
       text-align: center;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.95);
       padding: 40px;
-      border-radius: 15px;
+      border-radius: 18px;
       max-width: 500px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.5);
     }
 
-    .error-content h1 {
+    .error-box h1 {
       font-size: 3rem;
-      margin: 0 0 20px 0;
-      color: #d7b899;
+      margin: 0 0 15px 0;
+      color: #1e1814;
     }
 
-    .error-content p {
+    .error-box p {
       font-size: 1.1rem;
-      margin-bottom: 30px;
-      opacity: 0.9;
+      margin-bottom: 25px;
+      color: #2d241e;
+      opacity: 0.85;
     }
 
-    .error-content a {
+    .btn-home {
       display: inline-block;
       padding: 12px 24px;
-      background: #d7b899;
-      color: #1e1814;
+      background: #1e1814;
+      color: #fff;
       text-decoration: none;
-      border-radius: 20px;
+      border-radius: 12px;
       font-weight: bold;
-      transition: 0.3s;
+      transition: 0.2s;
     }
 
-    .error-content a:hover {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    .btn-home:hover {
+      background: #d7b899;
+      color: #1e1814;
+      transform: translateY(-2px);
+    }
+
+    .coffee-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
     }
   </style>
+
 </head>
+
 <body>
+
   <div class="error-container">
-    <div class="error-content">
+
+    <div class="error-box">
+
+      <div class="coffee-icon">☕</div>
+
       <h1>Error</h1>
-      <p><%= message || 'Something went wrong' %></p>
-      <a href="/"> Back to Home</a>
+
+      <p>
+        <%= message || 'Something went wrong' %>
+      </p>
+
+      <a href="/" class="btn-home">Back to Home</a>
+
     </div>
+
   </div>
+
 </body>
 </html>

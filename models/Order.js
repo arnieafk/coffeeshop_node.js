@@ -1,7 +1,11 @@
 const db = require('../config/db');
 
+/* =========================
+   MANILA TIMESTAMP
+========================= */
 function getManilaTimestamp() {
   const now = new Date();
+
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Manila',
     year: 'numeric',
@@ -22,10 +26,9 @@ function getManilaTimestamp() {
 }
 
 /* =========================
-   GET ALL ORDERS (ADMIN)
+   ADMIN: GET ALL ORDERS
 ========================= */
 async function getAllWithUser() {
-
   const [rows] = await db.query(`
     SELECT 
       o.*,
@@ -36,14 +39,13 @@ async function getAllWithUser() {
     ORDER BY o.id DESC
   `);
 
-  return rows;
+  return rows || [];
 }
 
 /* =========================
-   GET ALL ORDERS (STAFF OPTIMIZED)
+   STAFF: GET ORDERS (WITH ITEMS)
 ========================= */
 async function getAllForStaff() {
-
   const [orders] = await db.query(`
     SELECT
       o.id,
@@ -56,11 +58,12 @@ async function getAllForStaff() {
     ORDER BY o.id DESC
   `);
 
-  if (!orders.length) {
-    return [];
-  }
+  if (!orders || orders.length === 0) return [];
 
-  const orderIds = orders.map(order => order.id);
+  const orderIds = orders.map(o => o.id);
+
+  // SAFE GUARD
+  if (orderIds.length === 0) return orders;
 
   const [items] = await db.query(`
     SELECT
@@ -70,24 +73,19 @@ async function getAllForStaff() {
       p.price
     FROM order_items oi
     JOIN products p ON p.id = oi.product_id
-    WHERE oi.order_id IN (?)
-  `, [orderIds]);
+    WHERE oi.order_id IN (${orderIds.map(() => '?').join(',')})
+  `, orderIds);
 
-  const groupedItems = {};
+  const grouped = {};
 
-  items.forEach(item => {
+  for (const item of items || []) {
+    if (!grouped[item.order_id]) grouped[item.order_id] = [];
+    grouped[item.order_id].push(item);
+  }
 
-    if (!groupedItems[item.order_id]) {
-      groupedItems[item.order_id] = [];
-    }
-
-    groupedItems[item.order_id].push(item);
-
-  });
-
-  orders.forEach(order => {
-    order.items = groupedItems[order.id] || [];
-  });
+  for (const order of orders) {
+    order.items = grouped[order.id] || [];
+  }
 
   return orders;
 }
@@ -96,7 +94,6 @@ async function getAllForStaff() {
    GET SINGLE ORDER
 ========================= */
 async function getById(orderId) {
-
   const [orders] = await db.query(`
     SELECT
       o.*,
@@ -107,9 +104,7 @@ async function getById(orderId) {
     WHERE o.id = ?
   `, [orderId]);
 
-  if (!orders.length) {
-    return null;
-  }
+  if (!orders || orders.length === 0) return null;
 
   const order = orders[0];
 
@@ -123,7 +118,7 @@ async function getById(orderId) {
     WHERE oi.order_id = ?
   `, [orderId]);
 
-  order.items = items;
+  order.items = items || [];
 
   return order;
 }
@@ -132,7 +127,6 @@ async function getById(orderId) {
    GET CUSTOMER ORDERS
 ========================= */
 async function getByUserId(userId) {
-
   const [rows] = await db.query(`
     SELECT *
     FROM orders
@@ -140,41 +134,37 @@ async function getByUserId(userId) {
     ORDER BY id DESC
   `, [userId]);
 
-  return rows;
+  return rows || [];
 }
 
 /* =========================
-   CREATE ORDER (TRANSACTION SAFE)
+   CREATE ORDER (FIXED STATUS CONSISTENCY)
 ========================= */
 async function createOrder(userId, cartItems) {
-
   const createdAt = getManilaTimestamp();
   const conn = await db.getConnection();
 
   try {
-
     await conn.beginTransaction();
 
     let total = 0;
 
-    for (const item of cartItems) {
-      total += Number(item.price) * Number(item.quantity);
+    for (const item of cartItems || []) {
+      total += Number(item.price || 0) * Number(item.quantity || 0);
     }
 
-    const [orderResult] = await conn.query(`
+    const [result] = await conn.query(`
       INSERT INTO orders (user_id, status, total, created_at)
       VALUES (?, ?, ?, ?)
-    `, [userId, 'pending', total, createdAt]);
+    `, [userId, 'Pending', total, createdAt]); // FIXED HERE
 
-    const orderId = orderResult.insertId;
+    const orderId = result.insertId;
 
-    for (const item of cartItems) {
-
+    for (const item of cartItems || []) {
       await conn.query(`
         INSERT INTO order_items (order_id, product_id, quantity)
         VALUES (?, ?, ?)
       `, [orderId, item.id, item.quantity]);
-
     }
 
     await conn.query(`
@@ -183,18 +173,14 @@ async function createOrder(userId, cartItems) {
     `, [orderId, 'Waiting Verification', createdAt]);
 
     await conn.commit();
-
     return orderId;
 
-  } catch (error) {
-
+  } catch (err) {
     await conn.rollback();
-    throw error;
+    throw err;
 
   } finally {
-
     conn.release();
-
   }
 }
 
@@ -202,20 +188,17 @@ async function createOrder(userId, cartItems) {
    UPDATE ORDER STATUS
 ========================= */
 async function updateStatus(orderId, status) {
-
   await db.query(`
     UPDATE orders
     SET status = ?
     WHERE id = ?
   `, [status, orderId]);
-
 }
 
 /* =========================
    GET ORDER ITEMS
 ========================= */
 async function getOrderItems(orderId) {
-
   const [rows] = await db.query(`
     SELECT
       oi.quantity,
@@ -226,12 +209,9 @@ async function getOrderItems(orderId) {
     WHERE oi.order_id = ?
   `, [orderId]);
 
-  return rows;
+  return rows || [];
 }
 
-/* =========================
-   EXPORTS
-========================= */
 module.exports = {
   getAllWithUser,
   getAllForStaff,

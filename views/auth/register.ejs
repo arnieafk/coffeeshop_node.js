@@ -15,6 +15,8 @@
   --text-main:#2d1e12;
   --white-glass:rgba(255,255,255,0.95);
   --shadow-md:0 10px 25px rgba(0,0,0,0.08);
+  --error:#e74c3c;
+  --error-bg:#fadbd8;
 }
 
 * { box-sizing:border-box; }
@@ -22,14 +24,16 @@
 body {
   margin:0;
   font-family:'Segoe UI',sans-serif;
-  background:linear-gradient(135deg,var(--espresso-deep),var(--espresso-mute));
+  background: linear-gradient(135deg, #1e1814, #2d241e);
 }
 
+/* LAYOUT */
 .auth {
   display:flex;
   min-height:100vh;
 }
 
+/* LEFT */
 .left {
   flex:1;
   display:flex;
@@ -37,12 +41,20 @@ body {
   justify-content:center;
   color:white;
   padding:40px;
+  background: radial-gradient(circle at top, rgba(215,184,153,0.15), transparent 60%);
 }
 
 .left h1 {
   color:var(--latte-accent);
+  font-size:2.4rem;
+  margin-bottom:10px;
 }
 
+.left p {
+  opacity:0.85;
+}
+
+/* RIGHT */
 .right {
   flex:1;
   background:var(--cream-bg);
@@ -52,6 +64,7 @@ body {
   padding:40px;
 }
 
+/* BOX */
 .box {
   width:100%;
   max-width:420px;
@@ -59,22 +72,38 @@ body {
   padding:40px;
   border-radius:18px;
   box-shadow:var(--shadow-md);
+  border:1px solid rgba(255,255,255,0.5);
+}
+
+.box h2 {
+  margin-bottom:20px;
+  color:var(--espresso-deep);
+}
+
+/* INPUT */
+label {
+  font-weight:600;
+  font-size:0.9rem;
+  color:var(--text-main);
 }
 
 input {
   width:100%;
   padding:12px;
-  margin-top:8px;
-  margin-bottom:18px;
+  margin-top:6px;
+  margin-bottom:16px;
   border-radius:10px;
   border:1px solid #ddd;
+  transition:0.2s;
 }
 
 input:focus {
-  border-color:var(--latte-accent);
   outline:none;
+  border-color:var(--latte-accent);
+  box-shadow:0 0 0 3px rgba(215,184,153,0.25);
 }
 
+/* BUTTON */
 button {
   width:100%;
   padding:14px;
@@ -84,17 +113,46 @@ button {
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition:0.2s;
 }
 
 button:hover {
   background:var(--latte-accent);
   color:var(--espresso-deep);
+  transform:translateY(-2px);
 }
 
+/* LINKS */
 a {
   color:var(--espresso-deep);
   font-weight:bold;
   text-decoration:none;
+}
+
+a:hover {
+  color:var(--latte-accent);
+}
+
+/* ERROR */
+.error {
+  background:var(--error-bg);
+  color:var(--error);
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:15px;
+  font-size:0.9rem;
+}
+
+/* RESPONSIVE */
+@media (max-width:768px) {
+  .auth {
+    flex-direction:column;
+  }
+
+  .left {
+    text-align:center;
+    padding:30px;
+  }
 }
 </style>
 
@@ -104,20 +162,22 @@ a {
 
 <div class="auth">
 
+  <!-- LEFT SIDE -->
   <div class="left">
     <div>
-      <h1> Join Coffee System</h1>
-      <p>Create your account and start ordering coffee</p>
+      <h1>☕ Coffee Shop System</h1>
+      <p>Create your account and start ordering fresh coffee anytime.</p>
     </div>
   </div>
 
+  <!-- RIGHT SIDE -->
   <div class="right">
     <div class="box">
 
-      <h2>Register</h2>
+      <h2>Create Account</h2>
 
       <% if (error) { %>
-        <p style="color:red;"><%= error %></p>
+        <div class="error"><%= error %></div>
       <% } %>
 
       <form method="POST" action="/register">
@@ -138,8 +198,8 @@ a {
 
       </form>
 
-      <p style="margin-top:15px;">
-        Already have account? <a href="/login">Login</a>
+      <p style="margin-top:15px; text-align:center;">
+        Already have an account? <a href="/login">Login</a>
       </p>
 
     </div>

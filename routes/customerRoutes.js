@@ -11,6 +11,7 @@ router.use(ensureAuthenticated, authorizeRole('customer'));
 router.get('/', async (req, res, next) => {
   try {
     const orders = await Order.getByUserId(req.session.user.id);
+
     const stats = {
       totalOrders: orders.length,
       rating: 5,
@@ -21,6 +22,7 @@ router.get('/', async (req, res, next) => {
       user: req.session.user,
       stats
     });
+
   } catch (error) {
     next(error);
   }
@@ -28,13 +30,21 @@ router.get('/', async (req, res, next) => {
 
 // MENU & CART
 router.get('/menu', customerController.viewMenu);
+
 router.post('/menu/:id/add', customerController.addToCart);
 
 router.get('/cart', customerController.viewCart);
+
+// CART QUANTITY CONTROLS
+router.post('/cart/:id/increase', customerController.increaseQuantity);
+
+router.post('/cart/:id/decrease', customerController.decreaseQuantity);
+
 router.post('/cart/:id/remove', customerController.removeFromCart);
 
 // ORDERS
 router.post('/orders/place', customerController.placeOrder);
+
 router.get('/orders', customerController.myOrders);
 
 module.exports = router;

@@ -1,92 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orders Management - Admin</title>
-  <link rel="stylesheet" href="/css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders Management - Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+
+<style>
+
+/* ===== ADMIN ORDERS TABLE UPGRADE ===== */
+
+.table-container{
+  background:white;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.table thead{
+  background:linear-gradient(135deg, var(--espresso-deep), var(--espresso-mute));
+  color:white;
+}
+
+.table th{
+  padding:14px;
+  text-transform:uppercase;
+  font-size:0.85rem;
+  letter-spacing:0.5px;
+}
+
+.table td{
+  padding:14px;
+  border-bottom:1px solid #eee;
+  font-size:0.95rem;
+}
+
+.table tbody tr:hover{
+  background:#fafaf8;
+}
+
+/* STATUS BADGE ENHANCEMENT */
+.status-badge{
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:0.75rem;
+  font-weight:700;
+  display:inline-block;
+}
+
+/* workflow colors */
+.status-pending{
+  background:rgba(241,196,15,0.15);
+  color:#7a5a0f;
+}
+
+.status-preparing{
+  background:rgba(52,152,219,0.15);
+  color:#1b4f72;
+}
+
+.status-completed{
+  background:rgba(39,174,96,0.15);
+  color:#196f3d;
+}
+
+/* BUTTON ALIGNMENT */
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+</style>
+
 </head>
+
 <body>
-  <!-- Top Header Bar -->
-  <header class="top-header">
-    <div class="user-info">
-      <span> Admin Dashboard</span>
-    </div>
-    <div class="user-info">
-      <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
-      <a href="/logout" class="logout-btn">Logout</a>
-    </div>
-  </header>
 
-  <div class="container">
-    <!-- Persistent Left Sidebar -->
-    <nav class="sidebar">
-      <h2> Admin Panel</h2>
-      <a href="/admin"> Dashboard</a>
-      <a href="/admin/products"> Products</a>
-      <a href="/admin/orders"> Orders</a>
-      <a href="/admin/payments"> Payments</a>
-    </nav>
+<header class="top-header">
 
-    <!-- Main Content Area -->
-    <main class="main">
-      <div class="header">Orders Management</div>
-
-      <!-- Quick Actions -->
-      <div class="card">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <a href="/admin/products" class="btn btn-secondary"> Manage Products</a>
-          <a href="/admin/payments" class="btn btn-secondary"> View Payments</a>
-          <a href="/admin" class="btn btn-secondary"> Back to Dashboard</a>
-        </div>
-      </div>
-
-      <!-- Orders Table -->
-      <% if (typeof orders !== 'undefined' && orders.length > 0) { %>
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% orders.forEach(order => { %>
-                <tr>
-                  <td style="font-weight: 600;">#<%= order.id %></td>
-                  <td><%= order.customer_name %></td>
-                  <td style="font-size: 0.9rem;"><%= order.customer_email %></td>
-                  <td><span class="status-badge status-<%= order.status.toLowerCase() %>"><%= order.status %></span></td>
-                  <td style="font-weight: 600; color: var(--espresso-deep);">$<%= Number(order.total).toFixed(2) %></td>
-                  <td><%= formatManilaDateTime(order.created_at) %></td>
-                  <td class="actions">
-                    <a href="/admin/orders/<%= order.id %>" class="btn btn-small btn-info">View</a>
-                    <% if (order.status === 'Pending') { %>
-                      <form method="POST" action="/admin/orders/<%= order.id %>/status" style="display: inline;">
-                        <input type="hidden" name="status" value="Preparing">
-                        <button type="submit" class="btn btn-small btn-success"> Confirm</button>
-                      </form>
-                    <% } %>
-                  </td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
-        </div>
-      <% } else { %>
-        <div class="card" style="text-align: center;">
-          <div style="font-size: 3rem; margin-bottom: 20px;"></div>
-          <h3>No Orders Found</h3>
-          <p>All orders have been processed!</p>
-        </div>
-      <% } %>
-    </main>
+  <div class="user-info">
+    <span>Admin Dashboard</span>
   </div>
+
+  <div class="user-info">
+    <span>
+      Welcome,
+      <%= typeof user !== 'undefined' ? user.name : 'Admin' %>
+    </span>
+
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+
+</header>
+
+<div class="container">
+
+<nav class="sidebar">
+
+  <h2>Admin Panel</h2>
+
+  <p class="menu-title">Main</p>
+
+  <a href="/admin">Dashboard</a>
+  <a href="/admin/products">Products</a>
+  <a href="/admin/orders" class="active">Orders</a>
+  <a href="/admin/payments">Payments</a>
+  <a href="/admin/staff">Staff Management</a>
+
+</nav>
+
+<main class="main">
+
+  <div class="header">Orders Management</div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="card">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="/admin/products" class="btn btn-secondary">Products</a>
+      <a href="/admin/payments" class="btn btn-secondary">Payments</a>
+      <a href="/admin" class="btn btn-secondary">Dashboard</a>
+      <a href="/admin/staff" class="btn btn-secondary">Staff Management</a>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <% if (orders && orders.length > 0) { %>
+
+    <div class="table-container">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th style="text-align:center;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <% orders.forEach(order => { %>
+
+            <tr>
+
+              <!-- ORDER ID -->
+              <td style="font-weight:800;">
+                #<%= order.id %>
+              </td>
+
+              <!-- CUSTOMER -->
+              <td style="font-weight:600;">
+                <%= order.customer_name %>
+              </td>
+
+              <!-- EMAIL -->
+              <td style="opacity:0.8; font-size:0.9rem;">
+                <%= order.customer_email %>
+              </td>
+
+              <!-- STATUS -->
+              <td>
+                <span class="status-badge status-<%= String(order.status).toLowerCase() %>">
+                  <%= order.status %>
+                </span>
+              </td>
+
+              <!-- TOTAL -->
+              <td style="font-weight:800; color:var(--espresso-deep);">
+                ₱<%= Number(order.total || 0).toFixed(2) %>
+              </td>
+
+              <!-- DATE -->
+              <td style="font-size:0.9rem;">
+                <%= formatManilaDateTime(order.created_at) %>
+              </td>
+
+              <!-- ACTIONS -->
+              <td>
+
+                <div class="actions">
+
+                  <a
+                    href="/admin/orders/<%= order.id %>"
+                    class="btn btn-small btn-info"
+                  >
+                    View
+                  </a>
+
+                  <% if (String(order.status).toLowerCase() === 'pending') { %>
+
+                    <form method="POST"
+                          action="/admin/orders/<%= order.id %>/status">
+
+                      <input type="hidden" name="status" value="Preparing">
+
+                      <button class="btn btn-small btn-success">
+                        Confirm
+                      </button>
+
+                    </form>
+
+                  <% } else if (String(order.status).toLowerCase() === 'preparing') { %>
+
+                    <form method="POST"
+                          action="/admin/orders/<%= order.id %>/status">
+
+                      <input type="hidden" name="status" value="Completed">
+
+                      <button class="btn btn-small btn-primary">
+                        Complete
+                      </button>
+
+                    </form>
+
+                  <% } else { %>
+
+                    <button class="btn btn-small btn-secondary" disabled>
+                      Done
+                    </button>
+
+                  <% } %>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          <% }) %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  <% } else { %>
+
+    <!-- EMPTY STATE -->
+    <div class="card" style="text-align:center; padding:40px;">
+      <h3>No Orders Found</h3>
+      <p style="opacity:0.7;">All orders have been processed.</p>
+    </div>
+
+  <% } %>
+
+</main>
+
+</div>
+
 </body>
 </html>

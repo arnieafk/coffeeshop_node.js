@@ -22,7 +22,6 @@
     </div>
 </header>
 
-
 <div class="container">
 
 <nav class="sidebar">
@@ -31,15 +30,11 @@
     <a href="/staff/orders"> Orders</a>
 </nav>
 
-
-
 <main class="main">
 
 <div class="header">
 Order Management
 </div>
-
-
 
 <!-- Metrics -->
 <div class="metrics-grid">
@@ -76,8 +71,6 @@ Order Management
 
 </div>
 
-
-
 <!-- Orders -->
 <% if (orders && orders.length > 0) { %>
 
@@ -98,10 +91,9 @@ Order Management
             </p>
         </div>
 
-
         <div style="text-align:right;">
             <div style="font-weight:700;color:var(--espresso-deep);">
-                $<%= Number(order.total).toFixed(2) %>
+                ₱<%= Number(order.total || 0).toFixed(2) %>
             </div>
 
             <span class="status-badge status-<%= order.status.toLowerCase() %>">
@@ -110,8 +102,6 @@ Order Management
         </div>
 
     </div>
-
-
 
     <!-- Items -->
     <% if (order.items && order.items.length > 0) { %>
@@ -127,7 +117,7 @@ Order Management
             </span>
 
             <span>
-                $<%= (item.price * item.quantity).toFixed(2) %>
+                ₱<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %>
             </span>
 
         </div>
@@ -137,8 +127,6 @@ Order Management
     </div>
 
     <% } %>
-
-
 
     <!-- Update Status -->
     <div style="display:flex;justify-content:flex-end;gap:10px;">
@@ -187,8 +175,6 @@ Order Management
 </div>
 
 <% } %>
-
-
 
 </main>
 </div>

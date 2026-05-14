@@ -1,85 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Products Management - Admin</title>
-  <link rel="stylesheet" href="/css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products Management - Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+
+<style>
+
+/* ===== ADMIN TABLE UPGRADE ONLY ===== */
+
+.table-container{
+  background:white;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.table thead{
+  background:linear-gradient(135deg, var(--espresso-deep), var(--espresso-mute));
+  color:white;
+}
+
+.table th{
+  padding:14px;
+  text-align:left;
+  font-size:0.85rem;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+}
+
+.table td{
+  padding:14px;
+  border-bottom:1px solid #eee;
+  font-size:0.95rem;
+}
+
+.table tbody tr:hover{
+  background:#fafaf8;
+  transition:0.2s ease;
+}
+
+/* ACTION BUTTONS */
+.btn-small{
+  padding:7px 12px;
+  font-size:0.8rem;
+}
+
+/* STATUS STYLE (optional reuse) */
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:0.75rem;
+  font-weight:700;
+}
+
+</style>
+
 </head>
+
 <body>
-  <!-- Top Header Bar -->
-  <header class="top-header">
-    <div class="user-info">
-      <span> Admin Dashboard</span>
-    </div>
-    <div class="user-info">
-      <span>Welcome, <%= typeof user !== 'undefined' ? user.name : 'Admin' %></span>
-      <a href="/logout" class="logout-btn">Logout</a>
-    </div>
-  </header>
 
-  <div class="container">
-    <!-- Persistent Left Sidebar -->
-    <nav class="sidebar">
-      <h2> Admin Panel</h2>
-      <a href="/admin"> Dashboard</a>
-      <a href="/admin/products"> Products</a>
-      <a href="/admin/orders"> Orders</a>
-      <a href="/admin/payments"> Payments</a>
-    </nav>
+<header class="top-header">
 
-    <!-- Main Content Area -->
-    <main class="main">
-      <div class="header">Products Management</div>
-
-      <!-- Quick Actions -->
-      <div class="card">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-          <a href="/admin/products/new" class="btn btn-primary"> Add New Product</a>
-          <a href="/admin/orders" class="btn btn-secondary"> View Orders</a>
-          <a href="/admin/payments" class="btn btn-secondary"> View Payments</a>
-          <a href="/admin" class="btn btn-secondary"> Back to Dashboard</a>
-        </div>
-      </div>
-
-      <!-- Products Table -->
-      <% if (typeof products !== 'undefined' && products.length > 0) { %>
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% products.forEach(product => { %>
-                <tr>
-                  <td style="font-weight: 600;"><%= product.name %></td>
-                  <td style="font-weight: 600; color: var(--espresso-deep);">$<%= Number(product.price).toFixed(2) %></td>
-                  <td><%= product.description || 'No description' %></td>
-                  <td class="actions">
-                    <a href="/admin/products/<%= product.id %>/edit" class="btn btn-small btn-info">Edit</a>
-                    <form method="POST" action="/admin/products/<%= product.id %>/delete" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this product?')">
-                      <button type="submit" class="btn btn-small btn-danger">Delete</button>
-                    </form>
-                  </td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
-        </div>
-      <% } else { %>
-        <div class="card" style="text-align: center;">
-          <div style="font-size: 3rem; margin-bottom: 20px;"></div>
-          <h3>No Products Found</h3>
-          <p>Start by adding your first product to the menu!</p>
-          <a href="/admin/products/new" class="btn btn-primary" style="margin-top: 20px;">Add First Product</a>
-        </div>
-      <% } %>
-    </main>
+  <div class="user-info">
+    <span>Admin Dashboard</span>
   </div>
+
+  <div class="user-info">
+    <span>
+      Welcome,
+      <%= typeof user !== 'undefined' ? user.name : 'Admin' %>
+    </span>
+
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+
+</header>
+
+<div class="container">
+
+<nav class="sidebar">
+
+  <h2>Admin Panel</h2>
+
+  <p class="menu-title">Main</p>
+
+  <a href="/admin">Dashboard</a>
+  <a href="/admin/products" class="active">Products</a>
+  <a href="/admin/orders">Orders</a>
+  <a href="/admin/payments">Payments</a>
+  <a href="/admin/staff">Staff Management</a>
+
+</nav>
+
+<main class="main">
+
+  <!-- TOAST -->
+  <% if (success) { %>
+    <div class="card" style="background:#eafaf1;color:#1e7e34;border-left:5px solid #27ae60;">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="card" style="background:#fdecea;color:#a71d2a;border-left:5px solid #e74c3c;">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <div class="header">Products Management</div>
+
+  <!-- ACTION BAR -->
+  <div class="card">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="/admin/products/new" class="btn btn-primary">+ Add Product</a>
+      <a href="/admin/orders" class="btn btn-secondary">Orders</a>
+      <a href="/admin/payments" class="btn btn-secondary">Payments</a>
+      <a href="/admin" class="btn btn-secondary">Dashboard</a>
+      <a href="/admin/staff" class="btn btn-secondary">Staff Management</a>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <% if (products && products.length > 0) { %>
+
+    <div class="table-container">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th style="text-align:center;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <% products.forEach(product => { %>
+
+            <tr>
+
+              <td style="font-weight:700;">
+                <%= product.name %>
+              </td>
+
+              <td style="font-weight:800; color:var(--espresso-deep);">
+                ₱<%= Number(product.price || 0).toFixed(2) %>
+              </td>
+
+              <td style="opacity:0.8;">
+                <%= product.description || 'No description available' %>
+              </td>
+
+              <td>
+                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+
+                  <a
+                    href="/admin/products/<%= product.id %>/edit"
+                    class="btn btn-small btn-info"
+                  >
+                    Edit
+                  </a>
+
+                  <form
+                    method="POST"
+                    action="/admin/products/<%= product.id %>/delete"
+                    onsubmit="return confirm('Delete this product?')"
+                  >
+
+                    <button class="btn btn-small btn-danger">
+                      Delete
+                    </button>
+
+                  </form>
+
+                </div>
+              </td>
+
+            </tr>
+
+          <% }) %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  <% } else { %>
+
+    <div class="card" style="text-align:center;padding:40px;">
+      <h3>No Products Found</h3>
+      <p style="opacity:0.7;">Start adding coffee products to your menu.</p>
+
+      <a href="/admin/products/new" class="btn btn-primary" style="margin-top:15px;">
+        Add First Product
+      </a>
+    </div>
+
+  <% } %>
+
+</main>
+
+</div>
+
 </body>
 </html>

@@ -31,31 +31,16 @@ content="width=device-width, initial-scale=1.0">
     </div>
 </header>
 
-
-
 <div class="container">
 
 <nav class="sidebar">
     <h2> Admin Panel</h2>
 
-    <a href="/admin">
-       Dashboard
-    </a>
-
-    <a href="/admin/products">
-       Products
-    </a>
-
-    <a href="/admin/orders">
-       Orders
-    </a>
-
-    <a href="/admin/payments">
-       Payments
-    </a>
+    <a href="/admin">Dashboard</a>
+    <a href="/admin/products">Products</a>
+    <a href="/admin/orders">Orders</a>
+    <a href="/admin/payments">Payments</a>
 </nav>
-
-
 
 <main class="main">
 
@@ -63,23 +48,17 @@ content="width=device-width, initial-scale=1.0">
 Order #<%= order.id %> Details
 </div>
 
-
-
 <div class="card">
 <div style="display:flex;gap:15px;flex-wrap:wrap;">
-<a href="/admin/orders"
-class="btn btn-secondary">
+<a href="/admin/orders" class="btn btn-secondary">
  Back to Orders
 </a>
 
-<a href="/admin/payments"
-class="btn btn-secondary">
+<a href="/admin/payments" class="btn btn-secondary">
  Payments
 </a>
 </div>
 </div>
-
-
 
 <!-- Order Summary -->
 <div class="card">
@@ -115,7 +94,7 @@ background:#d4edda;">
 
 <p>
 <strong>Total:</strong>
-$<%= Number(order.total).toFixed(2) %>
+₱<%= Number(order.total || 0).toFixed(2) %>
 </p>
 
 <p>
@@ -124,8 +103,6 @@ $<%= Number(order.total).toFixed(2) %>
 </p>
 
 </div>
-
-
 
 <!-- Ordered Items -->
 <div class="card">
@@ -159,7 +136,7 @@ $<%= Number(order.total).toFixed(2) %>
 </td>
 
 <td>
-$<%= Number(item.price).toFixed(2) %>
+₱<%= Number(item.price || 0).toFixed(2) %>
 </td>
 
 <td>
@@ -167,10 +144,9 @@ $<%= Number(item.price).toFixed(2) %>
 </td>
 
 <td style="font-weight:600;">
-$<%= (
-Number(item.price)
-*
-Number(item.quantity)
+₱<%= (
+Number(item.price || 0) *
+Number(item.quantity || 0)
 ).toFixed(2) %>
 </td>
 
@@ -191,17 +167,12 @@ Number(item.quantity)
 
 </div>
 
-
-
 <!-- Admin Notes -->
 <div class="card">
 
 <h3> Order Monitoring</h3>
 
-<ul style="
-line-height:1.8;
-padding-left:20px;
-">
+<ul style="line-height:1.8; padding-left:20px;">
 <li>Review customer order details carefully</li>
 <li>Confirm payment before fulfillment</li>
 <li>Monitor order status updates</li>
@@ -209,8 +180,6 @@ padding-left:20px;
 </ul>
 
 </div>
-
-
 
 </main>
 </div>

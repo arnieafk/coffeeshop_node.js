@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Staff - Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<header class="top-header">
+
+  <div class="user-info">
+    <span>Coffee Shop System</span>
+  </div>
+
+  <div class="user-info">
+    <span>
+      Admin:
+      <strong><%= user.name %></strong>
+    </span>
+
+    <a class="logout-btn" href="/logout">Logout</a>
+  </div>
+
+</header>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+
+  <h2>ADMIN PANEL</h2>
+
+  <p class="menu-title">Main</p>
+
+  <a href="/admin">Dashboard</a>
+  <a href="/admin/products">Products</a>
+  <a href="/admin/orders">Orders</a>
+  <a href="/admin/payments">Payments</a>
+  <a href="/admin/staff">Staff</a>
+
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="header">Add New Staff</div>
+
+  <div class="card">
+
+    <form method="POST" action="/admin/staff" style="display:flex; flex-direction:column; gap:15px;">
+
+      <!-- NAME -->
+      <div>
+        <label>Full Name</label>
+        <input type="text" name="name" required style="width:100%; padding:10px;">
+      </div>
+
+      <!-- ROLE -->
+      <div>
+        <label>Role</label>
+        <select name="role" style="width:100%; padding:10px;">
+          <option value="staff">Staff</option>
+          <option value="cashier">Cashier</option>
+          <option value="barista">Barista</option>
+        </select>
+      </div>
+
+      <!-- STATUS -->
+      <div>
+        <label>Status</label>
+        <select name="status" style="width:100%; padding:10px;">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <!-- EMAIL -->
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" required style="width:100%; padding:10px;">
+      </div>
+
+      <!-- PASSWORD -->
+      <div>
+        <label>Password</label>
+        <input type="password" name="password" required style="width:100%; padding:10px;">
+      </div>
+
+      <!-- BUTTONS -->
+      <div style="display:flex; gap:10px;">
+
+        <button type="submit" class="btn btn-primary">
+          Save Staff
+        </button>
+
+        <a href="/admin/staff" class="btn btn-secondary">
+          Cancel
+        </a>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</main>
+
+</div>
+
+</body>
+</html>

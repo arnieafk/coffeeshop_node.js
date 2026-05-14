@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - Coffee Shop</title>
- <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css">
 
 <style>
 :root {
@@ -24,16 +24,16 @@
 body {
   margin:0;
   font-family:'Segoe UI',sans-serif;
-  background:linear-gradient(135deg,var(--espresso-deep),var(--espresso-mute));
+  background: linear-gradient(135deg, #1e1814, #2d241e);
 }
 
-/* LAYOUT */
+/* AUTH LAYOUT */
 .auth {
   display:flex;
   min-height:100vh;
 }
 
-/* LEFT */
+/* LEFT SIDE */
 .left {
   flex:1;
   display:flex;
@@ -41,28 +41,31 @@ body {
   justify-content:center;
   color:white;
   padding:40px;
-  position:relative;
+  background: radial-gradient(circle at top, rgba(215,184,153,0.15), transparent 60%);
 }
 
 .left h1 {
   color:var(--latte-accent);
-  font-size:2.2rem;
+  font-size:2.6rem;
+  margin-bottom:10px;
 }
 
 .left p {
-  opacity:0.8;
+  opacity:0.85;
+  font-size:1.05rem;
 }
 
-/* RIGHT */
+/* RIGHT SIDE */
 .right {
   flex:1;
-  background:var(--cream-bg);
   display:flex;
   align-items:center;
   justify-content:center;
   padding:40px;
+  background:var(--cream-bg);
 }
 
+/* LOGIN BOX */
 .box {
   width:100%;
   max-width:420px;
@@ -70,23 +73,38 @@ body {
   padding:40px;
   border-radius:18px;
   box-shadow:var(--shadow-md);
+  border:1px solid rgba(255,255,255,0.5);
 }
 
-/* FORM */
+.box h2 {
+  margin-bottom:20px;
+  color:var(--espresso-deep);
+}
+
+/* INPUTS */
+label {
+  font-weight:600;
+  font-size:0.9rem;
+  color:var(--text-main);
+}
+
 input {
   width:100%;
   padding:12px;
-  margin-top:8px;
-  margin-bottom:18px;
+  margin-top:6px;
+  margin-bottom:16px;
   border-radius:10px;
   border:1px solid #ddd;
+  transition:0.2s;
 }
 
 input:focus {
   outline:none;
   border-color:var(--latte-accent);
+  box-shadow:0 0 0 3px rgba(215,184,153,0.25);
 }
 
+/* BUTTON */
 button {
   width:100%;
   padding:14px;
@@ -96,17 +114,46 @@ button {
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition:0.2s;
 }
 
 button:hover {
   background:var(--latte-accent);
   color:var(--espresso-deep);
+  transform:translateY(-2px);
 }
 
+/* LINKS */
 a {
   color:var(--espresso-deep);
   text-decoration:none;
   font-weight:bold;
+}
+
+a:hover {
+  color:var(--latte-accent);
+}
+
+/* ERROR */
+.error {
+  background:var(--error-bg);
+  color:var(--error);
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:15px;
+  font-size:0.9rem;
+}
+
+/* RESPONSIVE */
+@media (max-width:768px) {
+  .auth {
+    flex-direction:column;
+  }
+
+  .left {
+    padding:30px;
+    text-align:center;
+  }
 }
 </style>
 
@@ -116,20 +163,22 @@ a {
 
 <div class="auth">
 
+  <!-- LEFT -->
   <div class="left">
     <div>
-      <h1> Coffee System</h1>
-      <p>Manage your coffee shop easily and efficiently</p>
+      <h1>☕ Coffee Shop System</h1>
+      <p>Fresh coffee, smooth management, fast ordering experience.</p>
     </div>
   </div>
 
+  <!-- RIGHT -->
   <div class="right">
     <div class="box">
 
       <h2>Login</h2>
 
       <% if (error) { %>
-        <p style="color:red;"><%= error %></p>
+        <div class="error"><%= error %></div>
       <% } %>
 
       <form method="POST" action="/login">
@@ -144,7 +193,7 @@ a {
 
       </form>
 
-      <p style="margin-top:15px;">
+      <p style="margin-top:15px; text-align:center;">
         No account? <a href="/register">Register</a>
       </p>
 
