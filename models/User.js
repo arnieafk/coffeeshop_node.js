@@ -2,6 +2,9 @@ const db = require('../config/db'); // IMPORTANT: correct path
 
 const User = {
 
+  /* =========================
+     FIND USER BY EMAIL
+  ========================= */
   findByEmail: async (email) => {
     const [rows] = await db.query(
       'SELECT * FROM users WHERE email = ?',
@@ -10,23 +13,30 @@ const User = {
     return rows[0];
   },
 
-  create: async ({ name, email, password, role = 'staff', status = 'active' }) => {
+  /* =========================
+     CREATE USER (FIXED ROLE SYSTEM)
+  ========================= */
+  create: async ({ name, email, password, role = 'customer', status = 'active' }) => {
 
-    // ✅ ONLY admin or staff allowed
-    const allowedRoles = ['admin', 'staff'];
+    // 🔥 FIX: allow all 3 roles
+    const allowedRoles = ['admin', 'staff', 'customer'];
 
     const safeRole = allowedRoles.includes(role)
       ? role
-      : 'staff';
+      : 'customer';
 
     const [result] = await db.query(
       'INSERT INTO users (name, role, email, password, status) VALUES (?, ?, ?, ?, ?)',
       [name, safeRole, email, password, status]
     );
 
+    // IMPORTANT: return insertId for session login
     return result.insertId;
   },
 
+  /* =========================
+     GET USER BY ID
+  ========================= */
   getById: async (id) => {
     const [rows] = await db.query(
       'SELECT * FROM users WHERE id = ?',
@@ -35,6 +45,9 @@ const User = {
     return rows[0];
   },
 
+  /* =========================
+     GET ALL STAFF + ADMIN
+  ========================= */
   getAllStaff: async () => {
     const [rows] = await db.query(
       `SELECT * FROM users
@@ -45,6 +58,9 @@ const User = {
     return rows;
   },
 
+  /* =========================
+     UPDATE USER
+  ========================= */
   update: async (id, data) => {
 
     const {
@@ -54,12 +70,11 @@ const User = {
       status = 'active'
     } = data;
 
-    // ✅ ONLY admin or staff allowed
-    const allowedRoles = ['admin', 'staff'];
+    const allowedRoles = ['admin', 'staff', 'customer'];
 
     const safeRole = allowedRoles.includes(role)
       ? role
-      : 'staff';
+      : 'customer';
 
     await db.query(
       `UPDATE users
@@ -69,6 +84,9 @@ const User = {
     );
   },
 
+  /* =========================
+     DELETE USER
+  ========================= */
   remove: async (id) => {
     await db.query(
       'DELETE FROM users WHERE id = ?',

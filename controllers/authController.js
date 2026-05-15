@@ -2,15 +2,22 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 function showLogin(req, res) {
-  if (req.session.user) return res.redirect('/');
+  if (req.session.user) {
+    return res.redirect(getDashboard(req.session.user.role));
+  }
   return res.render('auth/login', { error: null });
 }
 
 function showRegister(req, res) {
-  if (req.session.user) return res.redirect('/');
+  if (req.session.user) {
+    return res.redirect(getDashboard(req.session.user.role));
+  }
   return res.render('auth/register', { error: null });
 }
 
+/* =========================
+   REGISTER
+========================= */
 async function register(req, res) {
   try {
     const { name, email, password, confirmPassword } = req.body;
@@ -35,14 +42,16 @@ async function register(req, res) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     await User.create({
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password: hashedPassword,
-      role: 'customer'
+      role: 'customer' // DEFAULT ROLE
     });
 
     return res.redirect('/login');
+
   } catch (error) {
     console.error('[REGISTER ERROR]', error.message);
     return res.render('auth/register', {
@@ -51,9 +60,18 @@ async function register(req, res) {
   }
 }
 
+/* =========================
+   LOGIN
+========================= */
 async function login(req, res) {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.render('auth/login', {
+        error: 'Email and password are required.'
+      });
+    }
 
     const user = await User.findByEmail(email.trim().toLowerCase());
 
@@ -76,16 +94,11 @@ async function login(req, res) {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role,
+      role: user.role || 'customer'
     };
 
     req.session.save(() => {
-
-      if (user.role === 'admin') return res.redirect('/admin');
-
-      if (user.role === 'staff') return res.redirect('/staff');
-
-      return res.redirect('/customer');
+      return res.redirect(getDashboard(user.role));
     });
 
   } catch (error) {
@@ -96,14 +109,25 @@ async function login(req, res) {
   }
 }
 
+/* =========================
+   LOGOUT
+========================= */
 function logout(req, res) {
   req.session.destroy((err) => {
-    if (err) {
-      return res.redirect('/');
-    }
+    if (err) return res.redirect('/');
+
     res.clearCookie('connect.sid');
     return res.redirect('/login');
   });
+}
+
+/* =========================
+   ROLE REDIRECT HELPER
+========================= */
+function getDashboard(role) {
+  if (role === 'admin') return '/admin';
+  if (role === 'staff') return '/staff';
+  return '/customer';
 }
 
 module.exports = {

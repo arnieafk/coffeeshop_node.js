@@ -1,38 +1,43 @@
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 
+/* =========================
+   CART HELPER
+========================= */
 function getCart(req) {
   if (!req.session.cart) {
     req.session.cart = [];
   }
-
   return req.session.cart;
 }
 
+/* =========================
+   MENU
+========================= */
 async function viewMenu(req, res) {
   try {
-
     const products = await Product.getAll();
 
     res.render('customer/menu', {
       products,
-      cart: getCart(req)
+      cart: getCart(req),
+      user: req.session.user
     });
 
   } catch (error) {
-
     console.error('Error fetching products:', error);
 
     res.status(500).render('partials/error', {
       message: 'Failed to load menu'
     });
-
   }
 }
 
+/* =========================
+   ADD TO CART
+========================= */
 async function addToCart(req, res) {
   try {
-
     const product = await Product.getById(req.params.id);
 
     if (!product) {
@@ -42,7 +47,7 @@ async function addToCart(req, res) {
     const cart = getCart(req);
 
     const existing = cart.find(
-      (item) => item.id === product.id
+      (item) => Number(item.id) === Number(product.id)
     );
 
     if (existing) {
@@ -59,18 +64,18 @@ async function addToCart(req, res) {
     res.redirect('/customer/menu');
 
   } catch (error) {
-
     console.error('Error adding to cart:', error);
 
     res.status(500).render('partials/error', {
       message: 'Failed to add item to cart'
     });
-
   }
 }
 
+/* =========================
+   VIEW CART
+========================= */
 function viewCart(req, res) {
-
   const cart = getCart(req);
 
   const total = cart.reduce(
@@ -81,17 +86,19 @@ function viewCart(req, res) {
 
   res.render('customer/cart', {
     cart,
-    total
+    total,
+    user: req.session.user
   });
 }
 
-// INCREASE QUANTITY
+/* =========================
+   INCREASE QTY
+========================= */
 function increaseQuantity(req, res) {
-
   const cart = getCart(req);
 
   const item = cart.find(
-    (item) => item.id === Number(req.params.id)
+    (item) => Number(item.id) === Number(req.params.id)
   );
 
   if (item) {
@@ -99,44 +106,40 @@ function increaseQuantity(req, res) {
   }
 
   req.session.cart = cart;
-
   res.redirect('/customer/cart');
 }
 
-// DECREASE QUANTITY
+/* =========================
+   DECREASE QTY
+========================= */
 function decreaseQuantity(req, res) {
-
-  const cart = getCart(req);
+  let cart = getCart(req);
 
   const item = cart.find(
-    (item) => item.id === Number(req.params.id)
+    (item) => Number(item.id) === Number(req.params.id)
   );
 
   if (item) {
-
     if (item.quantity > 1) {
       item.quantity -= 1;
     } else {
-
-      req.session.cart = cart.filter(
+      cart = cart.filter(
         (cartItem) =>
-          cartItem.id !== Number(req.params.id)
+          Number(cartItem.id) !== Number(req.params.id)
       );
-
-      return res.redirect('/customer/cart');
     }
   }
 
   req.session.cart = cart;
-
   res.redirect('/customer/cart');
 }
 
-// REMOVE ITEM
+/* =========================
+   REMOVE ITEM
+========================= */
 function removeFromCart(req, res) {
-
   const cart = getCart(req).filter(
-    (item) => item.id !== Number(req.params.id)
+    (item) => Number(item.id) !== Number(req.params.id)
   );
 
   req.session.cart = cart;
@@ -144,39 +147,36 @@ function removeFromCart(req, res) {
   res.redirect('/customer/cart');
 }
 
+/* =========================
+   PLACE ORDER
+========================= */
 async function placeOrder(req, res) {
-
   const cart = getCart(req);
 
   if (!cart.length) {
     return res.redirect('/customer/cart');
   }
 
-  await Order.createOrder(
-    req.session.user.id,
-    cart
-  );
+  await Order.createOrder(req.session.user.id, cart);
 
   req.session.cart = [];
 
   res.redirect('/customer/orders');
 }
 
+/* =========================
+   MY ORDERS
+========================= */
 async function myOrders(req, res) {
-
-  const orders = await Order.getByUserId(
-    req.session.user.id
-  );
+  const orders = await Order.getByUserId(req.session.user.id);
 
   for (const order of orders) {
-
-    order.items = await Order.getOrderItems(
-      order.id
-    );
+    order.items = await Order.getOrderItems(order.id);
   }
 
   res.render('customer/orders', {
-    orders
+    orders,
+    user: req.session.user
   });
 }
 
