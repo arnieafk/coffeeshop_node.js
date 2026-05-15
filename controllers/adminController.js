@@ -53,11 +53,31 @@ async function getDashboardTotals() {
 async function getRecentOrders() {
   try {
     const orders = await Order.getAllWithUser();
-
-    return (orders || []).slice(0, 5); // latest 5 orders
+    return (orders || []).slice(0, 5);
   } catch (err) {
     console.error('[RECENT ORDERS ERROR]', err);
     return [];
+  }
+}
+
+/* =========================
+   🟢 DASHBOARD UI (RESTORED)
+========================= */
+async function adminDashboard(req, res) {
+  try {
+    const totals = await getDashboardTotals();
+    const recentOrders = await getRecentOrders();
+
+    return res.render('admin/dashboard', {
+      totals,
+      recentOrders,
+      user: req.session.user
+    });
+
+  } catch (error) {
+    console.error('[DASHBOARD ERROR]', error);
+    setError(req, 'Failed to load dashboard');
+    return res.redirect('/admin/orders');
   }
 }
 
@@ -163,6 +183,17 @@ async function listOrders(req, res) {
   try {
     const orders = await Order.getAllWithUser();
     const staffList = await User.getAllStaff();
+
+    // ✅ FIX: attach assigned staff name manually
+    const staffMap = {};
+    staffList.forEach(s => {
+      staffMap[s.id] = s.name;
+    });
+
+    orders.forEach(o => {
+      o.assigned_staff_name =
+        staffMap[o.assigned_staff_id] || 'Unassigned';
+    });
 
     return res.render('admin/orders', {
       orders,
@@ -416,7 +447,8 @@ module.exports = {
   updateStaff,
   deleteStaff,
 
-  // 🔥 ADDED FOR DASHBOARD
+  // 🔥 DASHBOARD RESTORED
+  adminDashboard,
   getDashboardTotals,
   getRecentOrders
 };

@@ -35,12 +35,53 @@
   padding:14px;
   border-bottom:1px solid #eee;
   font-size:0.95rem;
+  vertical-align: top;
 }
 
-.table tbody tr:hover{
-  background:#fafaf8;
+/* =========================
+   🔥 FIXED ACTION COLUMN
+========================= */
+
+.actions{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  align-items: stretch !important;
+  width: 100%;
 }
 
+/* each button/form full width */
+.actions a,
+.actions button,
+.actions form{
+  width: 100%;
+}
+
+/* form layout inside actions */
+.actions form{
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 6px;
+  align-items: center;
+}
+
+/* dropdown fix */
+.actions select{
+  flex: 1;
+  height: 34px;
+}
+
+/* buttons uniform */
+.actions button,
+.actions a{
+  height: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* status badge */
 .status-badge{
   padding:6px 12px;
   border-radius:20px;
@@ -52,13 +93,6 @@
 .status-pending{ background:rgba(241,196,15,0.15); color:#7a5a0f; }
 .status-preparing{ background:rgba(52,152,219,0.15); color:#1b4f72; }
 .status-completed{ background:rgba(39,174,96,0.15); color:#196f3d; }
-
-.actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
 </style>
 
 </head>
@@ -154,8 +188,7 @@
 
       <!-- ASSIGN STAFF -->
       <form method="POST"
-            action="/admin/orders/<%= order.id %>/assign"
-            style="display:flex; gap:5px; align-items:center;">
+            action="/admin/orders/<%= order.id %>/assign">
 
         <select name="staff_id" required>
           <option value="">Assign Staff</option>

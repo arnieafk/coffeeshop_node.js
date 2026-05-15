@@ -26,16 +26,18 @@ function getManilaTimestamp() {
 }
 
 /* =========================
-   ADMIN: GET ALL ORDERS
+   ADMIN: GET ALL ORDERS (FIXED)
 ========================= */
 async function getAllWithUser() {
   const [rows] = await db.query(`
     SELECT 
       o.*,
       u.name AS customer_name,
-      u.email AS customer_email
+      u.email AS customer_email,
+      s.name AS assigned_staff_name
     FROM orders o
     JOIN users u ON u.id = o.user_id
+    LEFT JOIN users s ON s.id = o.assigned_staff_id
     ORDER BY o.id DESC
   `);
 
@@ -204,7 +206,7 @@ async function updateStatus(orderId, status) {
 }
 
 /* =========================
-   ASSIGN STAFF TO ORDER (NEW FUNCTION)
+   ASSIGN STAFF
 ========================= */
 async function assignStaff(orderId, staffId) {
   await db.query(`
@@ -239,5 +241,5 @@ module.exports = {
   createOrder,
   updateStatus,
   getOrderItems,
-  assignStaff   // ✅ NEW EXPORT
+  assignStaff
 };
