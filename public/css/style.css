@@ -12,7 +12,7 @@
   --white-glass: rgba(255, 255, 255, 0.85);
   --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  
+
   --btn-primary: #6c5ce7;
   --btn-primary-hover: #5f3dc4;
   --btn-secondary: #2d241e;
@@ -30,6 +30,12 @@
 ========================= */
 * {
   box-sizing: border-box;
+}
+
+/* 🔥 FIX 1: REMOVE LINK LOOK GLOBALLY */
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 body {
@@ -76,7 +82,6 @@ body {
   color: var(--espresso-deep);
   padding: 8px 16px;
   border-radius: 20px;
-  text-decoration: none;
   font-weight: 600;
   transition: all 0.2s ease;
   border: none;
@@ -114,13 +119,13 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* FIXED SIDEBAR LINKS */
 .sidebar a {
   display: block;
   padding: 12px 14px;
   margin: 6px 0;
   border-radius: 10px;
   color: rgba(255,255,255,0.75);
-  text-decoration: none;
   transition: all 0.25s ease;
   font-size: 14px;
 }
@@ -158,12 +163,12 @@ body {
   overflow-x: auto;
   border-radius: 12px;
   box-shadow: var(--shadow-md);
+  background: white;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
 }
 
 .table thead {
@@ -174,6 +179,8 @@ body {
 .table th {
   padding: 16px 14px;
   text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
 }
 
 .table td {
@@ -186,7 +193,7 @@ body {
 }
 
 /* =========================
-   BUTTONS
+   🔥 BUTTON SYSTEM FIX (IMPORTANT)
 ========================= */
 .btn {
   padding: 10px 18px;
@@ -197,20 +204,39 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  transition: 0.2s ease;
+  text-decoration: none; /* FIX LINK LOOK */
 }
 
+/* COLORS */
 .btn-primary { background: var(--btn-primary); color: white; }
-.btn-secondary { background: var(--btn-secondary); color: white; }
-.btn-success { background: var(--btn-success); color: white; }
-.btn-info { background: var(--btn-info); color: white; }
+.btn-primary:hover { background: var(--btn-primary-hover); }
 
+.btn-secondary { background: var(--btn-secondary); color: white; }
+.btn-secondary:hover { background: var(--btn-secondary-hover); }
+
+.btn-success { background: var(--btn-success); color: white; }
+.btn-success:hover { background: var(--btn-success-hover); }
+
+.btn-info { background: var(--btn-info); color: white; }
+.btn-info:hover { background: var(--btn-info-hover); }
+
+.btn-danger {
+  background: var(--btn-danger);
+  color: white;
+}
+.btn-danger:hover {
+  background: var(--btn-danger-hover);
+}
+
+/* SIZE */
 .btn-small {
   padding: 8px 14px;
   font-size: 0.85rem;
 }
 
 /* =========================
-   STATUS
+   STATUS BADGES
 ========================= */
 .status-badge {
   padding: 6px 12px;
@@ -224,43 +250,18 @@ body {
 .status-completed { background: rgba(39,174,96,0.12); color:#196f3d; }
 
 /* =========================
-   🔥 FIX: ACTIONS ALIGNMENT (ADDED ONLY)
+   ACTION FIX (CLEAN VERSION)
 ========================= */
-
-td .actions {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-  align-items: stretch !important;
-  width: 100%;
-}
-
-td .actions form,
-td .actions a,
-td .actions button {
-  width: 100% !important;
-}
-
-td .actions form {
-  display: flex !important;
-  gap: 6px !important;
-  align-items: center !important;
-}
-
-td .actions select {
-  flex: 1;
-  height: 34px;
-}
-
-td .actions button,
-td .actions a {
-  height: 34px;
+.actions {
   display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
 }
 
-/* ===== FIX DASHBOARD GRID LAYOUT ===== */
+/* =========================
+   DASHBOARD GRID
+========================= */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
