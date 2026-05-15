@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Order = require('../models/Order');
+const Payment = require('../models/Payment');
 
 /* =========================
    CART HELPER
@@ -148,7 +149,7 @@ function removeFromCart(req, res) {
 }
 
 /* =========================
-   PLACE ORDER
+   PLACE ORDER (UPDATED -> GO TO PAYMENT)
 ========================= */
 async function placeOrder(req, res) {
   const cart = getCart(req);
@@ -157,11 +158,12 @@ async function placeOrder(req, res) {
     return res.redirect('/customer/cart');
   }
 
-  await Order.createOrder(req.session.user.id, cart);
+  const orderId = await Order.createOrder(req.session.user.id, cart);
 
   req.session.cart = [];
 
-  res.redirect('/customer/orders');
+  // 🔥 AFTER ORDER → GO TO PAYMENT PAGE
+  res.redirect(`/customer/payment/${orderId}`);
 }
 
 /* =========================
@@ -180,6 +182,38 @@ async function myOrders(req, res) {
   });
 }
 
+/* =========================
+   PAYMENT PAGE
+========================= */
+async function showPaymentPage(req, res) {
+  try {
+    res.render('customer/payment', {
+      orderId: req.params.id,
+      user: req.session.user
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('partials/error', {
+      message: 'Failed to load payment page'
+    });
+  }
+}
+
+/* =========================
+   PROCESS PAYMENT
+========================= */
+async function processPayment(req, res) {
+  try {
+    await Payment.markAsPaid(req.params.id);
+    res.redirect('/customer/orders');
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('partials/error', {
+      message: 'Payment failed'
+    });
+  }
+}
+
 module.exports = {
   viewMenu,
   addToCart,
@@ -189,4 +223,7 @@ module.exports = {
   removeFromCart,
   placeOrder,
   myOrders,
+
+  showPaymentPage,
+  processPayment
 };

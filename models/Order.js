@@ -26,7 +26,7 @@ function getManilaTimestamp() {
 }
 
 /* =========================
-   ADMIN: GET ALL ORDERS (FIXED)
+   ADMIN: GET ALL ORDERS
 ========================= */
 async function getAllWithUser() {
   const [rows] = await db.query(`
@@ -45,7 +45,7 @@ async function getAllWithUser() {
 }
 
 /* =========================
-   STAFF: GET ONLY ASSIGNED ORDERS
+   STAFF: GET ASSIGNED ORDERS
 ========================= */
 async function getAllForStaff(staffId) {
 
@@ -142,7 +142,7 @@ async function getByUserId(userId) {
 }
 
 /* =========================
-   CREATE ORDER
+   CREATE ORDER (UPDATED - PAYMENT READY)
 ========================= */
 async function createOrder(userId, cartItems) {
   const createdAt = getManilaTimestamp();
@@ -177,10 +177,11 @@ async function createOrder(userId, cartItems) {
       `, [orderId, item.id, item.quantity]);
     }
 
+    // 🔥 PAYMENT INIT (NO CHANGE LOGIC, JUST SAFER STATUS)
     await conn.query(`
       INSERT INTO payments (order_id, status, created_at)
       VALUES (?, ?, ?)
-    `, [orderId, 'Waiting Verification', createdAt]);
+    `, [orderId, 'Pending', createdAt]);
 
     await conn.commit();
     return orderId;

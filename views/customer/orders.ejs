@@ -41,13 +41,9 @@
 
       <p class="menu-title">Main Navigation</p>
 
-      <a href="/customer">
-        Dashboard
-      </a>
+      <a href="/customer">Dashboard</a>
 
-      <a href="/customer/menu">
-        Browse Menu
-      </a>
+      <a href="/customer/menu">Browse Menu</a>
 
       <a href="/customer/cart">
 
@@ -93,9 +89,7 @@
             class="btn btn-primary"
             style="margin-top: 20px;"
           >
-
             Browse Menu
-
           </a>
 
         </div>
@@ -119,13 +113,8 @@
 
               <div>
 
-                <h3 style="
-                  margin: 0;
-                  color: var(--espresso-deep);
-                ">
-
+                <h3 style="margin: 0; color: var(--espresso-deep);">
                   Order #<%= order.id %>
-
                 </h3>
 
                 <p style="
@@ -133,13 +122,10 @@
                   opacity: 0.75;
                   font-size: 0.95rem;
                 ">
-
                   <%= order.created_at
-                    ? new Date(order.created_at)
-                        .toLocaleString()
+                    ? new Date(order.created_at).toLocaleString()
                     : 'N/A'
                   %>
-
                 </p>
 
               </div>
@@ -152,18 +138,14 @@
                   color: var(--espresso-deep);
                   margin-bottom: 8px;
                 ">
-
                   ₱<%= Number(order.total || 0).toFixed(2) %>
-
                 </div>
 
                 <span class="
                   status-badge
                   status-<%= (order.status || 'pending').toLowerCase() %>
                 ">
-
                   <%= order.status || 'Pending' %>
-
                 </span>
 
               </div>
@@ -177,15 +159,10 @@
                 margin-bottom: 15px;
                 color: var(--espresso-deep);
               ">
-
                 Order Items
-
               </h4>
 
-              <% if (
-                order.items &&
-                order.items.length > 0
-              ) { %>
+              <% if (order.items && order.items.length > 0) { %>
 
                 <% order.items.forEach(item => { %>
 
@@ -218,66 +195,32 @@
                       ">
 
                         <% if (item.image) { %>
-
                           <img
                             src="<%= item.image %>"
                             alt="<%= item.name %>"
-                            style="
-                              width: 100%;
-                              height: 100%;
-                              object-fit: cover;
-                            "
+                            style="width:100%;height:100%;object-fit:cover;"
                           >
-
                         <% } else { %>
-
-                          <span style="
-                            font-size: 0.8rem;
-                            color: #777;
-                          ">
-                            Item
-                          </span>
-
+                          <span style="font-size:0.8rem;color:#777;">Item</span>
                         <% } %>
 
                       </div>
 
                       <div>
-
-                        <div style="
-                          font-weight: 700;
-                          color: var(--espresso-deep);
-                        ">
-
+                        <div style="font-weight:700;color:var(--espresso-deep);">
                           <%= item.name %>
-
                         </div>
 
-                        <div style="
-                          font-size: 0.9rem;
-                          opacity: 0.7;
-                        ">
-
-                          Quantity:
-                          <%= item.quantity %>
-
+                        <div style="font-size:0.9rem;opacity:0.7;">
+                          Quantity: <%= item.quantity %>
                         </div>
-
                       </div>
 
                     </div>
 
                     <!-- Right -->
-                    <div style="
-                      font-weight: 700;
-                      color: var(--espresso-deep);
-                    ">
-
-                      ₱<%= (
-                        Number(item.price) *
-                        Number(item.quantity)
-                      ).toFixed(2) %>
-
+                    <div style="font-weight:700;color:var(--espresso-deep);">
+                      ₱<%= (Number(item.price) * Number(item.quantity)).toFixed(2) %>
                     </div>
 
                   </div>
@@ -286,9 +229,7 @@
 
               <% } else { %>
 
-                <p style="opacity: 0.7;">
-                  No order items found.
-                </p>
+                <p style="opacity: 0.7;">No order items found.</p>
 
               <% } %>
 
@@ -306,22 +247,32 @@
               gap: 15px;
             ">
 
-              <div style="
-                font-size: 0.95rem;
-                opacity: 0.75;
-              ">
-
+              <div style="font-size: 0.95rem; opacity: 0.75;">
                 Thank you for ordering with us.
-
               </div>
 
-              <a
-                href="/customer/menu"
-                class="btn btn-secondary"
-              >
+              <!-- =========================
+                   🔥 PAYMENT BUTTON (ADDED ONLY)
+              ========================= -->
+              <% if (order.status !== 'Completed' && order.status !== 'Paid') { %>
 
+                <a
+                  href="/customer/payment/<%= order.id %>"
+                  class="btn btn-primary"
+                >
+                  Pay Now
+                </a>
+
+              <% } else { %>
+
+                <span style="color:green;font-weight:600;">
+                  Paid / Completed
+                </span>
+
+              <% } %>
+
+              <a href="/customer/menu" class="btn btn-secondary">
                 Order Again
-
               </a>
 
             </div>

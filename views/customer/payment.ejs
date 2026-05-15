@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - Coffee Shop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="user-info">
+      <span>Coffee Shop</span>
+    </div>
+
+    <div class="user-info">
+      <span>
+        Welcome,
+        <%= user ? user.name : 'Customer' %>
+      </span>
+
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <h2>Customer Panel</h2>
+
+      <a href="/customer">Dashboard</a>
+      <a href="/customer/menu">Browse Menu</a>
+      <a href="/customer/cart">Cart</a>
+      <a href="/customer/orders">My Orders</a>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <div class="header">
+        Payment
+      </div>
+
+      <div class="card" style="text-align:center; padding:40px;">
+
+        <h2>Complete Your Payment</h2>
+
+        <p style="margin-top:10px;">
+          Order ID:
+          <strong>#<%= orderId %></strong>
+        </p>
+
+        <p style="margin-top:10px; opacity:0.7;">
+          Click the button below to simulate payment.
+        </p>
+
+        <!-- PAYMENT FORM -->
+        <form method="POST" action="/customer/payment/<%= orderId %>/pay">
+          <button class="btn btn-primary" style="margin-top:20px;">
+            Pay Now
+          </button>
+        </form>
+
+        <a href="/customer/orders" style="display:block; margin-top:20px;">
+          Back to Orders
+        </a>
+
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

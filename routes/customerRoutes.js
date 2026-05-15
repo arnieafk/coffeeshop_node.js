@@ -7,7 +7,9 @@ const { ensureAuthenticated, authorizeRole } = require('../middleware/authMiddle
 // protect customer routes
 router.use(ensureAuthenticated, authorizeRole('customer'));
 
-// DASHBOARD
+/* =========================
+   DASHBOARD
+========================= */
 router.get('/', async (req, res, next) => {
   try {
     const orders = await Order.getByUserId(req.session.user.id);
@@ -28,23 +30,28 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// MENU & CART
+/* =========================
+   MENU & CART
+========================= */
 router.get('/menu', customerController.viewMenu);
-
 router.post('/menu/:id/add', customerController.addToCart);
 
 router.get('/cart', customerController.viewCart);
 
-// CART QUANTITY CONTROLS
 router.post('/cart/:id/increase', customerController.increaseQuantity);
-
 router.post('/cart/:id/decrease', customerController.decreaseQuantity);
-
 router.post('/cart/:id/remove', customerController.removeFromCart);
 
-// ORDERS
+/* =========================
+   ORDERS
+========================= */
 router.post('/orders/place', customerController.placeOrder);
-
 router.get('/orders', customerController.myOrders);
+
+/* =========================
+   PAYMENT (NEW)
+========================= */
+router.get('/payment/:id', customerController.showPaymentPage);
+router.post('/payment/:id/pay', customerController.processPayment);
 
 module.exports = router;
