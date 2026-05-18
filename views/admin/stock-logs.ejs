@@ -1,0 +1,19 @@
+<h2>Stock History Logs</h2>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Product</th>
+    <th>Quantity Added</th>
+    <th>Restocked By</th>
+    <th>Date</th>
+  </tr>
+
+  <% logs.forEach(log => { %>
+    <tr>
+      <td><%= log.product_name %></td>
+      <td>+<%= log.quantity %></td>
+      <td><%= log.user_name || 'System' %></td>
+      <td><%= log.created_at %></td>
+    </tr>
+  <% }) %>
+</table>

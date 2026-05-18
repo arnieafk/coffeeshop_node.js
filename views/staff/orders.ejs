@@ -129,37 +129,53 @@ Order Management
     <% } %>
 
     <!-- Update Status -->
-    <div style="display:flex;justify-content:flex-end;gap:10px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
 
-        <form method="POST"
-              action="/staff/orders/<%= order.id %>/status"
-              style="display:flex;gap:10px;">
+        <!-- CURRENT STATUS -->
+        <div>
 
-            <select name="status"
-                    style="padding:8px;border-radius:8px;">
+            <strong>Status:</strong>
 
-                <option value="Pending"
-                    <%= order.status === 'Pending' ? 'selected' : '' %>>
-                    Pending
-                </option>
+            <span class="status-badge status-<%= order.status.toLowerCase() %>">
+                <%= order.status %>
+            </span>
 
-                <option value="Preparing"
-                    <%= order.status === 'Preparing' ? 'selected' : '' %>>
-                    Preparing
-                </option>
+        </div>
 
-                <option value="Completed"
-                    <%= order.status === 'Completed' ? 'selected' : '' %>>
-                    Completed
-                </option>
+        <!-- ACTION BUTTON -->
+        <div>
 
-            </select>
+            <% if (order.status === 'Pending') { %>
 
-            <button class="btn btn-primary">
-                Update
-            </button>
+                <form method="POST"
+                      action="/staff/orders/<%= order.id %>/status">
 
-        </form>
+                    <button class="btn btn-primary">
+                        Start Preparing
+                    </button>
+
+                </form>
+
+            <% } else if (order.status === 'Preparing') { %>
+
+                <form method="POST"
+                      action="/staff/orders/<%= order.id %>/status">
+
+                    <button class="btn btn-success">
+                        Mark Completed
+                    </button>
+
+                </form>
+
+            <% } else { %>
+
+                <span class="status-badge status-completed">
+                    Order Completed
+                </span>
+
+            <% } %>
+
+        </div>
 
     </div>
 

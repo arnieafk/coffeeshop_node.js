@@ -67,8 +67,6 @@ async function getAllForStaff(staffId) {
 
   const orderIds = orders.map(o => o.id);
 
-  if (orderIds.length === 0) return orders;
-
   const [items] = await db.query(`
     SELECT
       oi.order_id,
@@ -98,6 +96,7 @@ async function getAllForStaff(staffId) {
    GET SINGLE ORDER
 ========================= */
 async function getById(orderId) {
+
   const [orders] = await db.query(`
     SELECT
       o.*,
@@ -116,7 +115,8 @@ async function getById(orderId) {
     SELECT
       oi.quantity,
       p.name,
-      p.price
+      p.price,
+      p.id AS product_id
     FROM order_items oi
     JOIN products p ON p.id = oi.product_id
     WHERE oi.order_id = ?
@@ -142,7 +142,7 @@ async function getByUserId(userId) {
 }
 
 /* =========================
-   CREATE ORDER (UPDATED - PAYMENT READY)
+   CREATE ORDER (FINAL SAFE INVENTORY FIX)
 ========================= */
 async function createOrder(userId, cartItems) {
   const createdAt = getManilaTimestamp();
@@ -153,10 +153,29 @@ async function createOrder(userId, cartItems) {
 
     let total = 0;
 
+    /* =========================
+       STEP 1: VALIDATE STOCK FIRST
+    ========================= */
     for (const item of cartItems || []) {
+      const [product] = await conn.query(
+        'SELECT stock FROM products WHERE id = ? FOR UPDATE',
+        [item.id]
+      );
+
+      if (!product[0]) {
+        throw new Error(`Product not found (ID ${item.id})`);
+      }
+
+      if (product[0].stock < item.quantity) {
+        throw new Error(`Insufficient stock for product ID ${item.id}`);
+      }
+
       total += Number(item.price || 0) * Number(item.quantity || 0);
     }
 
+    /* =========================
+       STEP 2: CREATE ORDER
+    ========================= */
     const [result] = await conn.query(`
       INSERT INTO orders (
         user_id,
@@ -170,14 +189,26 @@ async function createOrder(userId, cartItems) {
 
     const orderId = result.insertId;
 
+    /* =========================
+       STEP 3: INSERT ITEMS + DEDUCT STOCK SAFELY
+    ========================= */
     for (const item of cartItems || []) {
+
       await conn.query(`
         INSERT INTO order_items (order_id, product_id, quantity)
         VALUES (?, ?, ?)
       `, [orderId, item.id, item.quantity]);
+
+      await conn.query(`
+        UPDATE products
+        SET stock = stock - ?
+        WHERE id = ?
+      `, [item.quantity, item.id]);
     }
 
-    // 🔥 PAYMENT INIT (NO CHANGE LOGIC, JUST SAFER STATUS)
+    /* =========================
+       STEP 4: PAYMENT INIT
+    ========================= */
     await conn.query(`
       INSERT INTO payments (order_id, status, created_at)
       VALUES (?, ?, ?)
@@ -199,6 +230,24 @@ async function createOrder(userId, cartItems) {
    UPDATE ORDER STATUS
 ========================= */
 async function updateStatus(orderId, status) {
+
+  const allowedFlow = ['Pending', 'Preparing', 'Completed'];
+
+  if (!allowedFlow.includes(status)) {
+    throw new Error('Invalid status');
+  }
+
+  const [rows] = await db.query(
+    'SELECT status FROM orders WHERE id = ?',
+    [orderId]
+  );
+
+  const current = rows[0]?.status;
+
+  if (current === 'Pending' && status === 'Completed') {
+    throw new Error('Cannot skip Preparing stage');
+  }
+
   await db.query(`
     UPDATE orders
     SET status = ?

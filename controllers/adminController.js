@@ -15,21 +15,17 @@ function setError(req, message) {
   req.session.error = message;
 }
 
-/* =====================================================
-   🔥 DASHBOARD FIX (ADDED ONLY - DO NOT REMOVE ANYTHING)
-===================================================== */
-
+/* =========================
+   DASHBOARD TOTALS
+========================= */
 async function getDashboardTotals() {
   try {
     const orders = await Order.getAllWithUser();
     const products = await Product.getAll();
-    const customers = await User.getAllStaff(); // fallback since no customer query
+    const customers = await User.getAllStaff();
 
     let revenue = 0;
-
-    orders.forEach(o => {
-      revenue += Number(o.total || 0);
-    });
+    orders.forEach(o => revenue += Number(o.total || 0));
 
     return {
       revenue,
@@ -40,13 +36,7 @@ async function getDashboardTotals() {
 
   } catch (err) {
     console.error('[DASHBOARD TOTALS ERROR]', err);
-
-    return {
-      revenue: 0,
-      orders: 0,
-      products: 0,
-      customers: 0
-    };
+    return { revenue: 0, orders: 0, products: 0, customers: 0 };
   }
 }
 
@@ -61,7 +51,7 @@ async function getRecentOrders() {
 }
 
 /* =========================
-   🟢 DASHBOARD UI (RESTORED)
+   DASHBOARD
 ========================= */
 async function adminDashboard(req, res) {
   try {
@@ -75,7 +65,7 @@ async function adminDashboard(req, res) {
     });
 
   } catch (error) {
-    console.error('[DASHBOARD ERROR]', error);
+    console.error(error);
     setError(req, 'Failed to load dashboard');
     return res.redirect('/admin/orders');
   }
@@ -84,20 +74,14 @@ async function adminDashboard(req, res) {
 /* =========================
    PRODUCTS
 ========================= */
-
 async function listProducts(req, res) {
   try {
     const products = await Product.getAll();
-
-    return res.render('admin/products', {
-      products,
-      user: req.session.user
-    });
-
-  } catch (error) {
-    console.error('[PRODUCT LIST ERROR]', error);
-    setError(req, 'Failed to load products');
-    return res.redirect('/admin/products');
+    return res.render('admin/products', { products, user: req.session.user });
+  } catch (e) {
+    console.error(e);
+    setError(req, 'Failed');
+    return res.redirect('/admin');
   }
 }
 
@@ -113,12 +97,10 @@ function showCreateProduct(req, res) {
 async function createProduct(req, res) {
   try {
     await Product.create(req.body);
-
-    setSuccess(req, 'Product created successfully');
+    setSuccess(req, 'Product created');
     return res.redirect('/admin/products');
-
-  } catch (error) {
-    console.error('[CREATE PRODUCT ERROR]', error);
+  } catch (e) {
+    console.error(e);
     setError(req, 'Error creating product');
     return res.redirect('/admin/products');
   }
@@ -127,11 +109,7 @@ async function createProduct(req, res) {
 async function showEditProduct(req, res) {
   try {
     const product = await Product.getById(req.params.id);
-
-    if (!product) {
-      setError(req, 'Product not found');
-      return res.redirect('/admin/products');
-    }
+    if (!product) return res.redirect('/admin/products');
 
     return res.render('admin/product-form', {
       product,
@@ -140,9 +118,8 @@ async function showEditProduct(req, res) {
       user: req.session.user
     });
 
-  } catch (error) {
-    console.error('[SHOW EDIT PRODUCT ERROR]', error);
-    setError(req, 'Error loading product');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/products');
   }
 }
@@ -150,13 +127,10 @@ async function showEditProduct(req, res) {
 async function updateProduct(req, res) {
   try {
     await Product.update(req.params.id, req.body);
-
-    setSuccess(req, 'Product updated successfully');
+    setSuccess(req, 'Updated');
     return res.redirect('/admin/products');
-
-  } catch (error) {
-    console.error('[UPDATE PRODUCT ERROR]', error);
-    setError(req, 'Error updating product');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/products');
   }
 }
@@ -164,35 +138,93 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
   try {
     await Product.remove(req.params.id);
+    setSuccess(req, 'Deleted');
+    return res.redirect('/admin/products');
+  } catch (e) {
+    console.error(e);
+    return res.redirect('/admin/products');
+  }
+}
 
-    setSuccess(req, 'Product deleted successfully');
+/* =========================
+   RESTOCK PRODUCT + STOCK LOG
+========================= */
+async function restockProduct(req, res) {
+  try {
+    const productId = req.params.id;
+    const qty = Number(req.body.qty);
+    const userId = req.session.user?.id || null;
+
+    if (!qty || qty <= 0) {
+      setError(req, 'Invalid restock quantity');
+      return res.redirect('/admin/products');
+    }
+
+    // update stock
+    await Product.restock(productId, qty);
+
+    // log stock history
+    const db = require('../config/db');
+    await db.query(`
+      INSERT INTO stock_logs (product_id, user_id, quantity, created_at)
+      VALUES (?, ?, ?, NOW())
+    `, [productId, userId, qty]);
+
+    setSuccess(req, `Restocked +${qty}`);
     return res.redirect('/admin/products');
 
   } catch (error) {
-    console.error('[DELETE PRODUCT ERROR]', error);
-    setError(req, 'Error deleting product');
+    console.error('[RESTOCK ERROR]', error);
+    setError(req, 'Error restocking product');
     return res.redirect('/admin/products');
+  }
+}
+
+/* =========================
+   STOCK LOGS
+========================= */
+async function listStockLogs(req, res) {
+  try {
+    const db = require('../config/db');
+
+    const [logs] = await db.query(`
+      SELECT 
+        sl.*,
+        p.name AS product_name,
+        u.name AS user_name
+      FROM stock_logs sl
+      LEFT JOIN products p ON p.id = sl.product_id
+      LEFT JOIN users u ON u.id = sl.user_id
+      ORDER BY sl.id DESC
+    `);
+
+    return res.render('admin/stock-logs', {
+      logs: logs || [],
+      user: req.session.user
+    });
+
+  } catch (error) {
+    console.error('[STOCK LOG ERROR]', error);
+    return res.render('admin/stock-logs', {
+      logs: [],
+      user: req.session.user
+    });
   }
 }
 
 /* =========================
    ORDERS
 ========================= */
-
 async function listOrders(req, res) {
   try {
     const orders = await Order.getAllWithUser();
     const staffList = await User.getAllStaff();
 
-    // ✅ FIX: attach assigned staff name manually
     const staffMap = {};
-    staffList.forEach(s => {
-      staffMap[s.id] = s.name;
-    });
+    staffList.forEach(s => staffMap[s.id] = s.name);
 
     orders.forEach(o => {
-      o.assigned_staff_name =
-        staffMap[o.assigned_staff_id] || 'Unassigned';
+      o.assigned_staff_name = staffMap[o.assigned_staff_id] || 'Unassigned';
     });
 
     return res.render('admin/orders', {
@@ -201,10 +233,8 @@ async function listOrders(req, res) {
       user: req.session.user
     });
 
-  } catch (error) {
-    console.error('[ORDER LIST ERROR]', error);
-    setError(req, 'Failed to load orders');
-
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/orders');
   }
 }
@@ -212,47 +242,31 @@ async function listOrders(req, res) {
 async function showOrder(req, res) {
   try {
     const order = await Order.getById(req.params.id);
-
-    if (!order) {
-      setError(req, 'Order not found');
-      return res.redirect('/admin/orders');
-    }
+    if (!order) return res.redirect('/admin/orders');
 
     return res.render('admin/order-details', {
-      title: 'Order Details',
       order,
       user: req.session.user
     });
 
-  } catch (error) {
-    console.error('[ORDER DETAILS ERROR]', error);
-    setError(req, 'Error loading order');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/orders');
   }
 }
 
-/* =========================
-   ASSIGN ORDER TO STAFF
-========================= */
-
 async function assignOrderStaff(req, res) {
   try {
     let { staff_id } = req.body;
-
-    staff_id = staff_id ? Number(staff_id) : null;
-
-    if (staff_id === 0 || Number.isNaN(staff_id)) {
-      staff_id = null;
-    }
+    staff_id = Number(staff_id || null);
 
     await Order.assignStaff(req.params.id, staff_id);
 
-    setSuccess(req, 'Order assigned successfully');
+    setSuccess(req, 'Assigned');
     return res.redirect('/admin/orders');
 
-  } catch (error) {
-    console.error('[ASSIGN STAFF ERROR]', error);
-    setError(req, 'Error assigning staff');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/orders');
   }
 }
@@ -260,19 +274,16 @@ async function assignOrderStaff(req, res) {
 /* =========================
    PAYMENTS
 ========================= */
-
 async function listPayments(req, res) {
   try {
     const payments = await Payment.getAll();
-
     return res.render('admin/payments', {
       payments,
       user: req.session.user
     });
 
-  } catch (error) {
-    console.error('[PAYMENTS ERROR]', error);
-    setError(req, 'Error loading payments');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/payments');
   }
 }
@@ -280,45 +291,26 @@ async function listPayments(req, res) {
 /* =========================
    ORDER STATUS
 ========================= */
-
 async function updateOrderStatus(req, res) {
   try {
-    const map = {
-      pending: 'Pending',
-      preparing: 'Preparing',
-      completed: 'Completed'
-    };
-
-    const status = map[req.body.status] || req.body.status;
-
-    await Order.updateStatus(req.params.id, status);
-
-    setSuccess(req, 'Order status updated successfully');
+    await Order.updateStatus(req.params.id, req.body.status);
+    setSuccess(req, 'Updated');
     return res.redirect('/admin/orders');
-
-  } catch (error) {
-    console.error('[ORDER STATUS ERROR]', error);
-    setError(req, 'Error updating order');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/orders');
   }
 }
 
 /* =========================
-   STAFF MANAGEMENT
+   STAFF
 ========================= */
-
 async function listStaff(req, res) {
   try {
     const staff = await User.getAllStaff();
-
-    return res.render('admin/staff', {
-      staff,
-      user: req.session.user
-    });
-
-  } catch (error) {
-    console.error('[STAFF LIST ERROR]', error);
-    setError(req, 'Failed to load staff');
+    return res.render('admin/staff', { staff, user: req.session.user });
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin');
   }
 }
@@ -327,7 +319,6 @@ function showCreateStaff(req, res) {
   return res.render('admin/staff-form', {
     staff: null,
     action: '/admin/staff',
-    title: 'Add Staff',
     user: req.session.user
   });
 }
@@ -337,28 +328,23 @@ async function createStaff(req, res) {
     const { name, email, password, role, status } = req.body;
 
     const existing = await User.findByEmail(email);
+    if (existing) return res.redirect('/admin/staff');
 
-    if (existing) {
-      setError(req, 'Email already exists');
-      return res.redirect('/admin/staff');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
 
     await User.create({
       name,
       email,
-      password: hashedPassword,
+      password: hashed,
       role: role || 'staff',
       status: status || 'active'
     });
 
-    setSuccess(req, 'Staff created successfully');
+    setSuccess(req, 'Created');
     return res.redirect('/admin/staff');
 
-  } catch (error) {
-    console.error('[CREATE STAFF ERROR]', error);
-    setError(req, 'Error creating staff');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/staff');
   }
 }
@@ -366,43 +352,27 @@ async function createStaff(req, res) {
 async function showEditStaff(req, res) {
   try {
     const staff = await User.getById(req.params.id);
-
-    if (!staff) {
-      setError(req, 'Staff not found');
-      return res.redirect('/admin/staff');
-    }
+    if (!staff) return res.redirect('/admin/staff');
 
     return res.render('admin/staff-form', {
       staff,
       action: `/admin/staff/${staff.id}/update`,
-      title: 'Edit Staff',
       user: req.session.user
     });
 
-  } catch (error) {
-    console.error('[SHOW STAFF ERROR]', error);
-    setError(req, 'Error loading staff');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/staff');
   }
 }
 
 async function updateStaff(req, res) {
   try {
-    const { name, email, role, status } = req.body;
-
-    await User.update(req.params.id, {
-      name,
-      email,
-      role: role || 'staff',
-      status: status || 'active'
-    });
-
-    setSuccess(req, 'Staff updated successfully');
+    await User.update(req.params.id, req.body);
+    setSuccess(req, 'Updated');
     return res.redirect('/admin/staff');
-
-  } catch (error) {
-    console.error('[UPDATE STAFF ERROR]', error);
-    setError(req, 'Error updating staff');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/staff');
   }
 }
@@ -410,13 +380,10 @@ async function updateStaff(req, res) {
 async function deleteStaff(req, res) {
   try {
     await User.remove(req.params.id);
-
-    setSuccess(req, 'Staff deleted successfully');
+    setSuccess(req, 'Deleted');
     return res.redirect('/admin/staff');
-
-  } catch (error) {
-    console.error('[DELETE STAFF ERROR]', error);
-    setError(req, 'Error deleting staff');
+  } catch (e) {
+    console.error(e);
     return res.redirect('/admin/staff');
   }
 }
@@ -424,7 +391,6 @@ async function deleteStaff(req, res) {
 /* =========================
    EXPORTS
 ========================= */
-
 module.exports = {
   listProducts,
   showCreateProduct,
@@ -432,6 +398,8 @@ module.exports = {
   showEditProduct,
   updateProduct,
   deleteProduct,
+  restockProduct,
+  listStockLogs,
 
   listOrders,
   showOrder,
@@ -447,7 +415,6 @@ module.exports = {
   updateStaff,
   deleteStaff,
 
-  // 🔥 DASHBOARD RESTORED
   adminDashboard,
   getDashboardTotals,
   getRecentOrders

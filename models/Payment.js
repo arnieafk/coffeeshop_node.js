@@ -28,35 +28,21 @@ async function getAll() {
    MARK PAYMENT AS PAID
 ========================= */
 async function markAsPaid(orderId) {
-  const conn = await db.getConnection();
 
-  try {
-    await conn.beginTransaction();
+  const db = require('../config/db');
 
-    // update payment
-    await conn.query(
-      `UPDATE payments
-       SET status = 'Paid'
-       WHERE order_id = ?`,
-      [orderId]
-    );
+  await db.query(`
+    UPDATE payments
+    SET status = 'Paid'
+    WHERE order_id = ?
+  `, [orderId]);
 
-    // optional but IMPORTANT: also update order status
-    await conn.query(
-      `UPDATE orders
-       SET status = 'Completed'
-       WHERE id = ?`,
-      [orderId]
-    );
+  await db.query(`
+    UPDATE orders
+    SET status = 'Pending'
+    WHERE id = ?
+  `, [orderId]);
 
-    await conn.commit();
-  } catch (error) {
-    await conn.rollback();
-    console.error('[PAYMENT ERROR] Failed to mark as paid:', error.message);
-    throw error;
-  } finally {
-    conn.release();
-  }
 }
 
 module.exports = {

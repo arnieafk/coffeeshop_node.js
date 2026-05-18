@@ -9,7 +9,6 @@
 
 <body>
 
-<!-- Top Header -->
 <header class="top-header">
     <div class="user-info">
         <span> Admin Dashboard</span>
@@ -23,134 +22,114 @@
 
 <div class="container">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <h2> Admin Panel</h2>
+<nav class="sidebar">
+    <h2> Admin Panel</h2>
 
-        <a href="/admin"> Dashboard</a>
-        <a href="/admin/products"> Products</a>
-        <a href="/admin/orders"> Orders</a>
-        <a href="/admin/payments"> Payments</a>
-    </nav>
+    <a href="/admin"> Dashboard</a>
+    <a href="/admin/products"> Products</a>
+    <a href="/admin/orders"> Orders</a>
+    <a href="/admin/payments"> Payments</a>
+</nav>
 
-    <!-- Main Content -->
-    <main class="main">
+<main class="main">
 
-        <div class="header">
-            <%= title %>
+    <div class="header">
+        <%= title %>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+            <a href="/admin/products" class="btn btn-secondary">Back to Products</a>
+            <a href="/admin/orders" class="btn btn-secondary">Orders</a>
+            <a href="/admin/payments" class="btn btn-secondary">Payments</a>
         </div>
+    </div>
 
-        <!-- Navigation -->
-        <div class="card">
-            <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                <a href="/admin/products" class="btn btn-secondary">Back to Products</a>
-                <a href="/admin/orders" class="btn btn-secondary">Orders</a>
-                <a href="/admin/payments" class="btn btn-secondary">Payments</a>
+    <div class="card">
+
+        <h2 style="margin-bottom:25px;">
+            <%= product ? 'Edit Product' : 'Add New Product' %>
+        </h2>
+
+        <form method="POST" action="<%= action %>">
+
+            <!-- NAME -->
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:600;">Product Name</label>
+
+                <input type="text"
+                    name="name"
+                    value="<%= product ? product.name : '' %>"
+                    required
+                    style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
             </div>
-        </div>
 
-        <!-- Form -->
-        <div class="card">
+            <!-- PRICE -->
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:600;">Price</label>
 
-            <h2 style="margin-bottom:25px;">
-                <%= product ? 'Edit Product' : 'Add New Product' %>
-            </h2>
+                <input type="number"
+                    step="0.01"
+                    name="price"
+                    value="<%= product ? Number(product.price || 0).toFixed(2) : '' %>"
+                    required
+                    style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
+            </div>
 
-            <form method="POST" action="<%= action %>">
+            <!-- STOCK (INVENTORY CORE) -->
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:600;">
+                    Stock Quantity
+                </label>
 
-                <!-- Name -->
-                <div style="margin-bottom:20px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">
-                        Product Name
-                    </label>
+                <input type="number"
+                    name="stock"
+                    min="0"
+                    value="<%= product ? (product.stock ?? 0) : 0 %>"
+                    required
+                    style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
 
-                    <input type="text"
-                        name="name"
-                        value="<%= product ? product.name : '' %>"
-                        required
-                        placeholder="Enter product name"
-                        style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
-                </div>
+                <small style="display:block; margin-top:6px; opacity:0.6;">
+                    ⚠️ Update this when items are restocked or sold
+                </small>
+            </div>
 
-                <!-- Price -->
-                <div style="margin-bottom:20px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">
-                        Price
-                    </label>
+            <!-- DESCRIPTION -->
+            <div style="margin-bottom:30px;">
+                <label style="font-weight:600;">Description</label>
 
-                    <!-- ✅ FIX: show PHP hint + safe value -->
-                    <div style="position: relative;">
+                <textarea name="description"
+                    rows="5"
+                    required
+                    style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;"><%= product ? product.description : '' %></textarea>
+            </div>
 
-                        <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:0.6;">
-                            ₱
-                        </span>
+            <!-- BUTTONS -->
+            <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary">
+                    Save Product
+                </button>
 
-                        <input type="number"
-                            step="0.01"
-                            name="price"
-                            value="<%= product ? Number(product.price || 0).toFixed(2) : '' %>"
-                            required
-                            placeholder="0.00"
-                            style="width:100%; padding:14px 14px 14px 30px; border:1px solid #ddd; border-radius:10px;">
-                    </div>
-                </div>
+                <a href="/admin/products" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
 
-                <!-- Stock -->
-                <div style="margin-bottom:20px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">
-                        Stock
-                    </label>
+        </form>
 
-                    <input type="number"
-                        name="stock"
-                        min="0"
-                        value="<%= product ? product.stock : 0 %>"
-                        required
-                        placeholder="Enter stock quantity"
-                        style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px;">
-                </div>
+    </div>
 
-                <!-- Description -->
-                <div style="margin-bottom:30px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">
-                        Description
-                    </label>
+    <!-- INVENTORY TIP -->
+    <div class="card">
+        <h3>Inventory Reminder</h3>
+        <ul style="line-height:1.8; padding-left:20px;">
+            <li>Stock = number of items available</li>
+            <li>System will show LOW STOCK if ≤ 5</li>
+            <li>Set stock = 0 if unavailable</li>
+        </ul>
+    </div>
 
-                    <textarea name="description"
-                        rows="5"
-                        required
-                        placeholder="Enter product description"
-                        style="width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; resize:none;"><%= product ? product.description : '' %></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                    <button type="submit" class="btn btn-primary">
-                        Save Product
-                    </button>
-
-                    <a href="/admin/products" class="btn btn-secondary">
-                        Cancel
-                    </a>
-                </div>
-
-            </form>
-
-        </div>
-
-        <!-- Tips -->
-        <div class="card">
-            <h3>Product Tips</h3>
-
-            <ul style="line-height:1.8; padding-left:20px;">
-                <li>Use clear product names</li>
-                <li>Keep pricing consistent in ₱</li>
-                <li>Add short descriptions</li>
-                <li>Update stock regularly</li>
-            </ul>
-        </div>
-
-    </main>
+</main>
 
 </div>
 

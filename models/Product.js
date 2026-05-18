@@ -12,7 +12,7 @@ async function getAll() {
     return rows;
   } catch (error) {
     console.error('[PRODUCT ERROR] Failed to fetch products:', error.message);
-    return []; // Return empty array to prevent crash
+    return [];
   }
 }
 
@@ -45,6 +45,7 @@ async function create(product) {
     INSERT INTO products (name, price, stock, description)
     VALUES (?, ?, ?, ?)
   `, [name, price, stock, description]);
+
   return result.insertId;
 }
 
@@ -75,6 +76,50 @@ async function remove(id) {
 }
 
 /* =========================
+   🔥 RESTOCK FUNCTION (ADMIN FEATURE)
+========================= */
+async function restock(id, qty, userId = null) {
+  const quantity = Number(qty || 0);
+
+  if (quantity <= 0) return;
+
+  await db.query(`
+    UPDATE products
+    SET stock = stock + ?
+    WHERE id = ?
+  `, [quantity, id]);
+
+  // 🔥 LOG RESTOCK
+  await db.query(`
+    INSERT INTO stock_logs (product_id, user_id, quantity, action, created_at)
+    VALUES (?, ?, ?, 'restock', NOW())
+  `, [id, userId, quantity]);
+}
+
+/* =========================
+   🔥 LOW STOCK CHECK (OPTIONAL USE IN UI)
+========================= */
+async function getLowStock(threshold = 5) {
+  const [rows] = await db.query(`
+    SELECT * FROM products
+    WHERE stock <= ?
+    ORDER BY stock ASC
+  `, [threshold]);
+
+  return rows;
+}
+
+/* =========================
+    🔥 STOCK LOGGING (OPTIONAL FOR AUDIT TRAIL)
+========================= */
+async function logRestock(productId, userId, qty) {
+  await db.query(`
+    INSERT INTO stock_logs (product_id, user_id, quantity, action, created_at)
+    VALUES (?, ?, ?, 'restock', NOW())
+  `, [productId, userId, qty]);
+}
+
+/* =========================
    EXPORTS
 ========================= */
 module.exports = {
@@ -82,5 +127,7 @@ module.exports = {
   getById,
   create,
   update,
-  remove
+  remove,
+  restock,
+  getLowStock
 };

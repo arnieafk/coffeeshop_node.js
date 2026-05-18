@@ -7,7 +7,6 @@ async function getStats(staffId) {
 
   try {
 
-    // ✅ ONLY GET ASSIGNED ORDERS
     const orders = await Order.getAllForStaff(staffId);
 
     const stats = {
@@ -56,7 +55,6 @@ async function getOrders(staffId) {
 
   try {
 
-    // ✅ ONLY GET ASSIGNED ORDERS
     return await Order.getAllForStaff(staffId);
 
   } catch (error) {
@@ -111,7 +109,6 @@ async function listOrders(req, res) {
 
     const staffId = req.session.user.id;
 
-    // ✅ ONLY SHOW ASSIGNED ORDERS
     const orders = await Order.getAllForStaff(staffId);
 
     res.render('staff/orders', {
@@ -134,24 +131,30 @@ async function updateOrderStatus(req, res) {
 
   try {
 
-    let { status } = req.body;
+    const order = await Order.getById(req.params.id);
 
-    const map = {
-      pending: 'Pending',
-      preparing: 'Preparing',
-      completed: 'Completed',
-      Pending: 'Pending',
-      Preparing: 'Preparing',
-      Completed: 'Completed'
-    };
-
-    status = map[status];
-
-    if (!status) {
+    if (!order) {
       return res.redirect('/staff/orders');
     }
 
-    await Order.updateStatus(req.params.id, status);
+    const currentStatus = String(order.status || '').toLowerCase();
+
+    let nextStatus = null;
+
+    // 🔥 FLOW CONTROL
+    if (currentStatus === 'pending') {
+      nextStatus = 'Preparing';
+    }
+
+    else if (currentStatus === 'preparing') {
+      nextStatus = 'Completed';
+    }
+
+    else {
+      return res.redirect('/staff/orders');
+    }
+
+    await Order.updateStatus(req.params.id, nextStatus);
 
     res.redirect('/staff/orders');
 

@@ -70,6 +70,10 @@ router.post('/products', adminController.createProduct);
 router.get('/products/:id/edit', adminController.showEditProduct);
 router.post('/products/:id/edit', adminController.updateProduct);
 router.post('/products/:id/delete', adminController.deleteProduct);
+router.post('/products/:id/restock', adminController.restockProduct);
+
+/* STOCK LOGS (correct placement) */
+router.get('/stock-logs', adminController.listStockLogs);
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +98,30 @@ router.post(
 |--------------------------------------------------------------------------
 */
 router.get('/payments', adminController.listPayments);
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY MANAGEMENT (NEW)
+|--------------------------------------------------------------------------
+*/
+
+// VIEW INVENTORY
+router.get('/inventory', adminController.listInventory);
+
+// SHOW ADD INVENTORY FORM
+router.get('/inventory/new', adminController.showCreateInventory);
+
+// CREATE INVENTORY
+router.post('/inventory', adminController.createInventory);
+
+// SHOW EDIT INVENTORY FORM
+router.get('/inventory/:id/edit', adminController.showEditInventory);
+
+// UPDATE INVENTORY
+router.post('/inventory/:id/update', adminController.updateInventory);
+
+// DELETE INVENTORY
+router.post('/inventory/:id/delete', adminController.deleteInventory);
 
 /*
 |--------------------------------------------------------------------------

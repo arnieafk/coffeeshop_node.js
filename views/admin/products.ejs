@@ -52,13 +52,29 @@
   font-size:0.8rem;
 }
 
-/* STATUS STYLE (optional reuse) */
+/* STATUS STYLE */
 .badge{
   display:inline-block;
   padding:5px 10px;
   border-radius:20px;
   font-size:0.75rem;
   font-weight:700;
+}
+
+/* 🔥 INVENTORY BADGES */
+.stock-good{
+  background:#eafaf1;
+  color:#1e7e34;
+}
+
+.stock-low{
+  background:#fff3cd;
+  color:#856404;
+}
+
+.stock-out{
+  background:#fdecea;
+  color:#a71d2a;
 }
 
 </style>
@@ -102,7 +118,6 @@
 
 <main class="main">
 
-  <!-- TOAST -->
   <% if (success) { %>
     <div class="card" style="background:#eafaf1;color:#1e7e34;border-left:5px solid #27ae60;">
       <%= success %>
@@ -128,7 +143,6 @@
     </div>
   </div>
 
-  <!-- TABLE -->
   <% if (products && products.length > 0) { %>
 
     <div class="table-container">
@@ -139,6 +153,7 @@
           <tr>
             <th>Product</th>
             <th>Price</th>
+            <th>Stock</th>
             <th>Description</th>
             <th style="text-align:center;">Actions</th>
           </tr>
@@ -158,13 +173,35 @@
                 ₱<%= Number(product.price || 0).toFixed(2) %>
               </td>
 
-              <td style="opacity:0.8;">
-                <%= product.description || 'No description available' %>
+              <!-- 🔥 STOCK LOGIC -->
+              <td>
+                <% 
+                  const stock = Number(product.stock || 0);
+                  let stockClass = 'stock-good';
+                  let label = 'In Stock';
+
+                  if (stock <= 0) {
+                    stockClass = 'stock-out';
+                    label = 'Out of Stock';
+                  } else if (stock <= 5) {
+                    stockClass = 'stock-low';
+                    label = 'Low Stock';
+                  }
+                %>
+
+                <span class="badge <%= stockClass %>">
+                  <%= stock %> (<%= label %>)
+                </span>
               </td>
 
-              <td>
-                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+              <td style="opacity:0.8;">
+                <%= product.description || 'No description available' %>
+                  <td>
 
+              <td>
+                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;">
+
+                  <!-- EDIT -->
                   <a
                     href="/admin/products/<%= product.id %>/edit"
                     class="btn btn-small btn-info"
@@ -172,21 +209,40 @@
                     Edit
                   </a>
 
+                  <!-- DELETE -->
                   <form
                     method="POST"
                     action="/admin/products/<%= product.id %>/delete"
                     onsubmit="return confirm('Delete this product?')"
+                    style="display:inline;"
                   >
-
                     <button class="btn btn-small btn-danger">
                       Delete
                     </button>
+                  </form>
 
+                  <!-- RESTOCK -->
+                  <form
+                    method="POST"
+                    action="/admin/products/<%= product.id %>/restock"
+                    style="display:flex;gap:5px;align-items:center;"
+                  >
+                    <input
+                      type="number"
+                      name="qty"
+                      placeholder="Qty"
+                      min="1"
+                      style="width:60px; padding:4px;"
+                      required
+                    >
+
+                    <button class="btn btn-small btn-secondary">
+                      Restock
+                    </button>
                   </form>
 
                 </div>
               </td>
-
             </tr>
 
           <% }) %>
