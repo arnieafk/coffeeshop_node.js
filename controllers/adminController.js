@@ -311,6 +311,7 @@ async function listStaff(req, res) {
     return res.render('admin/staff', { staff, user: req.session.user });
   } catch (e) {
     console.error(e);
+    setError(req, 'Failed to load staff');
     return res.redirect('/admin');
   }
 }
@@ -328,7 +329,10 @@ async function createStaff(req, res) {
     const { name, email, password, role, status } = req.body;
 
     const existing = await User.findByEmail(email);
-    if (existing) return res.redirect('/admin/staff');
+    if (existing) {
+      setError(req, 'Email already exists');
+      return res.redirect('/admin/staff');
+    }
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -340,11 +344,12 @@ async function createStaff(req, res) {
       status: status || 'active'
     });
 
-    setSuccess(req, 'Created');
+    setSuccess(req, 'Staff created successfully');
     return res.redirect('/admin/staff');
 
   } catch (e) {
-    console.error(e);
+    console.error('[CREATE STAFF ERROR]', e);
+    setError(req, 'Failed to create staff');
     return res.redirect('/admin/staff');
   }
 }
@@ -352,7 +357,11 @@ async function createStaff(req, res) {
 async function showEditStaff(req, res) {
   try {
     const staff = await User.getById(req.params.id);
-    if (!staff) return res.redirect('/admin/staff');
+
+    if (!staff) {
+      setError(req, 'Staff not found');
+      return res.redirect('/admin/staff');
+    }
 
     return res.render('admin/staff-form', {
       staff,
@@ -361,18 +370,31 @@ async function showEditStaff(req, res) {
     });
 
   } catch (e) {
-    console.error(e);
+    console.error('[SHOW EDIT STAFF ERROR]', e);
+    setError(req, 'Failed to load staff');
     return res.redirect('/admin/staff');
   }
 }
 
 async function updateStaff(req, res) {
   try {
-    await User.update(req.params.id, req.body);
-    setSuccess(req, 'Updated');
+    const id = req.params.id;
+
+    const data = {
+      name: req.body.name,
+      email: req.body.email,
+      role: req.body.role,
+      status: req.body.status
+    };
+
+    await User.update(id, data);
+
+    setSuccess(req, 'Staff updated successfully');
     return res.redirect('/admin/staff');
+
   } catch (e) {
-    console.error(e);
+    console.error('[UPDATE STAFF ERROR]', e);
+    setError(req, 'Failed to update staff');
     return res.redirect('/admin/staff');
   }
 }
@@ -380,10 +402,12 @@ async function updateStaff(req, res) {
 async function deleteStaff(req, res) {
   try {
     await User.remove(req.params.id);
-    setSuccess(req, 'Deleted');
+    setSuccess(req, 'Staff deleted successfully');
     return res.redirect('/admin/staff');
+
   } catch (e) {
-    console.error(e);
+    console.error('[DELETE STAFF ERROR]', e);
+    setError(req, 'Failed to delete staff');
     return res.redirect('/admin/staff');
   }
 }

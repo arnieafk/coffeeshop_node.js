@@ -63,26 +63,27 @@ const User = {
   ========================= */
   update: async (id, data) => {
 
-    const {
-      name,
-      email,
-      role,
-      status = 'active'
-    } = data;
+  const {
+    name,
+    email,
+    role,
+    status
+  } = data;
 
-    const allowedRoles = ['admin', 'staff', 'customer'];
+  const allowedRoles = ['admin', 'staff', 'customer'];
+  const safeRole = allowedRoles.includes(role) ? role : 'customer';
 
-    const safeRole = allowedRoles.includes(role)
-      ? role
-      : 'customer';
+  const safeName = name || '';
+  const safeEmail = email || '';
+  const safeStatus = status || 'active';
 
-    await db.query(
-      `UPDATE users
-       SET name = ?, email = ?, role = ?, status = ?
-       WHERE id = ?`,
-      [name, email, safeRole, status, id]
-    );
-  },
+  await db.query(
+    `UPDATE users
+     SET name = ?, email = ?, role = ?, status = ?
+     WHERE id = ?`,
+    [safeName, safeEmail, safeRole, safeStatus, id]
+  );
+},
 
   /* =========================
      DELETE USER

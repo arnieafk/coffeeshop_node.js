@@ -105,24 +105,12 @@ router.get('/payments', adminController.listPayments);
 |--------------------------------------------------------------------------
 */
 
-// VIEW INVENTORY
-router.get('/inventory', adminController.listInventory);
-
-// SHOW ADD INVENTORY FORM
-router.get('/inventory/new', adminController.showCreateInventory);
-
-// CREATE INVENTORY
-router.post('/inventory', adminController.createInventory);
-
-// SHOW EDIT INVENTORY FORM
-router.get('/inventory/:id/edit', adminController.showEditInventory);
-
-// UPDATE INVENTORY
-router.post('/inventory/:id/update', adminController.updateInventory);
-
-// DELETE INVENTORY
-router.post('/inventory/:id/delete', adminController.deleteInventory);
-
+// router.get('/inventory', adminController.listInventory);
+// router.get('/inventory/new', adminController.showCreateInventory);
+// router.post('/inventory', adminController.createInventory);
+// router.get('/inventory/:id/edit', adminController.showEditInventory);
+// router.post('/inventory/:id/update', adminController.updateInventory);
+// router.post('/inventory/:id/delete', adminController.deleteInventory);
 /*
 |--------------------------------------------------------------------------
 | STAFF MANAGEMENT (FULL CRUD)
